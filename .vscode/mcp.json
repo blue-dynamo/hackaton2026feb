@@ -1,0 +1,108 @@
+{
+	"servers": {
+		"selenium-mcp-server": {
+			"type": "stdio",
+			"command": "npx",
+			"args": [
+				"-y",
+				"@angiejones/mcp-selenium"
+			]
+		},
+		"fetch-mcp-server": {
+			"type": "stdio",
+			"command": "npx",
+			"args": [
+				"mcp-fetch-server"
+			]
+		},
+		"grep-mcp-server": {
+			"type": "stdio",
+			"command": "uvx",
+			"args": [
+				"grep-mcp"
+			]
+		},
+		"context7-mcp-server": {
+			"type": "stdio",
+			"command": "npx",
+			"args": [
+				"-y",
+				"@upstash/context7-mcp"
+			]
+		},
+		"exa-mcp-server": {
+			"type": "stdio",
+			"command": "npx",
+			"args": [
+				"-y",
+				"exa-mcp-server"
+			]
+		},
+		"time-mcp-server": {
+			"type": "stdio",
+			"command": "python",
+			"args": [
+				"-m",
+				"mcp_server_time"
+			]
+		},
+		"git-mcp-server": {
+			"type": "stdio",
+			"command": "python",
+			"args": [
+				"-m",
+				"mcp_server_git"
+			]
+		},
+		"thinking-mcp-server": {
+			"type": "stdio",
+			"command": "npx",
+			"args": [
+				"-y",
+				"@modelcontextprotocol/server-sequential-thinking"
+			]
+		},
+		"everything-mcp-server": {
+			"type": "stdio",
+			"command": "npx",
+			"args": [
+				"-y",
+				"@modelcontextprotocol/server-everything"
+			]
+		},
+		"filesystem-mcp-server": {
+			"type": "stdio",
+			"command": "npx",
+			"args": [
+				"-y",
+				"@modelcontextprotocol/server-filesystem",
+				"/Users/rui.cadete/Desktop",
+				"/Users/rui.cadete/Downloads",
+				"/Users/rui.cadete/workspace/agents/opencode/hackaton2026feb"
+			]
+		},
+		"architecture-mcp-server": {
+			"type": "stdio",
+			"command": "uvx",
+			"args": [
+				"archguide-mcp"
+			]
+		},
+		"elicitation-mcp-server": {
+			"type": "stdio",
+			"command": "npx",
+			"args": [
+				"-y",
+				"@blizzy/mcp-elicit"
+			]
+		},
+		"docker-mcp-server": {
+			"type": "stdio",
+			"command": "uvx",
+			"args": [
+				"mcp-server-docker"
+			]
+		}
+	},
+	"inputs": []
+}
