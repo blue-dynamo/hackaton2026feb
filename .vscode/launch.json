@@ -1,0 +1,22 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "java",
+      "name": "Run story-writer",
+      "request": "launch",
+      "mainClass": "com.hackathon.storywriter.StoryWriterApplication",
+      "projectName": "story-writer",
+      "env": {}
+    },
+    {
+      "type": "java",
+      "name": "Debug story-writer",
+      "request": "launch",
+      "mainClass": "com.hackathon.storywriter.StoryWriterApplication",
+      "projectName": "story-writer",
+      "vmArgs": "-Dspring.profiles.active=default",
+      "env": {}
+    }
+  ]
+}

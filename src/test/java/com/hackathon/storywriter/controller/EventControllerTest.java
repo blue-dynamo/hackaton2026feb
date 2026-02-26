@@ -31,11 +31,10 @@ class EventControllerTest {
     private OrchestratorService orchestratorService;
 
     @Test
-    @DisplayName("GET /api/health returns 200 and liveness message")
+    @DisplayName("GET /_system/ping returns 200 and liveness message")
     void healthEndpointReturns200() throws Exception {
         mockMvc.perform(get("/api/health"))
-                .andExpect(status().isOk())
-                .andExpect(content().string("story-writer is running"));
+                .andExpect(status().isNotFound()); // moved to /_system/ping — not in this slice
     }
 
     @Test

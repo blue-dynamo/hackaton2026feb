@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
  * <p>Endpoints:
  * <ul>
  *   <li>{@code POST /api/events} — submit a test failure event and receive a full artifact JSON</li>
- *   <li>{@code GET  /api/health} — simple liveness check</li>
+ *   <li>{@code GET  /_system/ping} — simple liveness check (see {@link SystemController})</li>
  * </ul>
  */
 @RestController
@@ -53,13 +53,5 @@ public class EventController {
         log.info("POST /api/events received: source={}, test={}", event.source(), event.testName());
         ArtifactResponse response = orchestratorService.process(event);
         return ResponseEntity.ok(response);
-    }
-
-    /**
-     * Simple liveness probe.
-     */
-    @GetMapping("/health")
-    public ResponseEntity<String> health() {
-        return ResponseEntity.ok("story-writer is running");
     }
 }

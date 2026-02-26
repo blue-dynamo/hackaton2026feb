@@ -2,8 +2,8 @@
 @baseUrl = http://localhost:8080
 
 ###
-# Health check
-GET {{baseUrl}}/api/health
+# Liveness probe
+GET {{baseUrl}}/_system/ping
 
 ###
 # JUnit test failure — payment service NPE

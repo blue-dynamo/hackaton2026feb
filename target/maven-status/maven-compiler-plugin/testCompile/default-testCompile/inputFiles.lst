@@ -1,4 +1,5 @@
 /Users/rui.cadete/workspace/agents/opencode/hackaton2026feb/src/test/java/com/hackathon/storywriter/StoryWriterAcceptanceTest.java
 /Users/rui.cadete/workspace/agents/opencode/hackaton2026feb/src/test/java/com/hackathon/storywriter/StoryWriterIntegrationTest.java
 /Users/rui.cadete/workspace/agents/opencode/hackaton2026feb/src/test/java/com/hackathon/storywriter/controller/EventControllerTest.java
+/Users/rui.cadete/workspace/agents/opencode/hackaton2026feb/src/test/java/com/hackathon/storywriter/controller/SystemControllerTest.java
 /Users/rui.cadete/workspace/agents/opencode/hackaton2026feb/src/test/java/com/hackathon/storywriter/service/OrchestratorServiceTest.java

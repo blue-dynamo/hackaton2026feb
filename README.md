@@ -5,6 +5,7 @@
 ```
 src/main/java/com/hackathon/storywriter/
 	controller/EventController.java          ← POST /api/events
+	controller/SystemController.java         ← GET /_system/ping
 	model/TestFailureEvent.java              ← input record (source, testName, errorMessage, stackTrace, context)
 	model/ArtifactResponse.java              ← output record (technicalAnalysis, rootCause, bugReport, userStory, severity)
 	service/CopilotCliService.java           ← gh CLI wrapper (github-models OR explain strategy)
@@ -69,5 +70,6 @@ Phase 3: BugWriter + StoryWriter + Severity  →  merged ArtifactResponse JSON
 - **No LLM in orchestrator:** OrchestratorService is deterministic, only routes/merges agent outputs
 - **Tests:** Run `mvn test` (unit, integration, Concordion BDD)
 - **Agent files:** See `.github/agents/*.agent.md` for Copilot agent definitions and handoff workflows
+- **API endpoints:** `POST /api/events` — pipeline entry point; `GET /_system/ping` — liveness probe
 # hackaton2026feb
 Learning event to boost out productivity with AI

@@ -82,6 +82,7 @@ src/
   main/java/com/hackathon/storywriter/
     StoryWriterApplication.java
     controller/EventController.java          ← POST /api/events
+    controller/SystemController.java         ← GET /_system/ping
     model/TestFailureEvent.java              ← input record
     model/ArtifactResponse.java              ← output record
     service/CopilotCliService.java           ← gh CLI wrapper
@@ -94,6 +95,7 @@ src/
   main/resources/application.yml
   test/java/com/hackathon/storywriter/
     controller/EventControllerTest.java      ← MockMvc slice tests
+    controller/SystemControllerTest.java     ← MockMvc slice test for ping
     service/OrchestratorServiceTest.java     ← unit tests
     StoryWriterIntegrationTest.java          ← full context integration test
     StoryWriterAcceptanceTest.java           ← Concordion BDD fixture

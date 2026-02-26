@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report.xsd" version="3.0.2" name="com.hackathon.storywriter.controller.EventControllerTest" time="0.246" tests="4" errors="0" skipped="0" failures="0">
+<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report.xsd" version="3.0.2" name="com.hackathon.storywriter.controller.SystemControllerTest" time="1.004" tests="1" errors="0" skipped="0" failures="0">
   <properties>
     <property name="java.specification.version" value="25"/>
     <property name="sun.jnu.encoding" value="UTF-8"/>
@@ -68,9 +68,9 @@
     <property name="java.class.version" value="69.0"/>
     <property name="LOGGED_APPLICATION_NAME" value="[story-writer] "/>
   </properties>
-  <testcase name="processEventReturnsArtifact" classname="com.hackathon.storywriter.controller.EventControllerTest" time="0.072">
-    <system-out><![CDATA[2026-02-26 14:34:51.765 [main] INFO  org.springframework.test.context.support.AnnotationConfigContextLoaderUtils - Could not detect default configuration classes for test class [com.hackathon.storywriter.controller.EventControllerTest]: EventControllerTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
-2026-02-26 14:34:51.768 [main] INFO  org.springframework.boot.test.context.SpringBootTestContextBootstrapper - Found @SpringBootConfiguration com.hackathon.storywriter.StoryWriterApplication for test class com.hackathon.storywriter.controller.EventControllerTest
+  <testcase name="pingReturns200" classname="com.hackathon.storywriter.controller.SystemControllerTest" time="0.321">
+    <system-out><![CDATA[2026-02-26 14:34:50.978 [main] INFO  org.springframework.test.context.support.AnnotationConfigContextLoaderUtils - Could not detect default configuration classes for test class [com.hackathon.storywriter.controller.SystemControllerTest]: SystemControllerTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-02-26 14:34:51.028 [main] INFO  org.springframework.boot.test.context.SpringBootTestContextBootstrapper - Found @SpringBootConfiguration com.hackathon.storywriter.StoryWriterApplication for test class com.hackathon.storywriter.controller.SystemControllerTest
 
   .   ____          _            __ _ _
  /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
@@ -81,23 +81,21 @@
 
  :: Spring Boot ::                (v3.4.2)
 
-2026-02-26 14:34:51.785 [main] INFO  com.hackathon.storywriter.controller.EventControllerTest - Starting EventControllerTest using Java 25.0.2 with PID 65282 (started by rui.cadete in /Users/rui.cadete/workspace/agents/opencode/hackaton2026feb)
-2026-02-26 14:34:51.786 [main] DEBUG com.hackathon.storywriter.controller.EventControllerTest - Running with Spring Boot v3.4.2, Spring v6.2.2
-2026-02-26 14:34:51.786 [main] INFO  com.hackathon.storywriter.controller.EventControllerTest - No active profile set, falling back to 1 default profile: "default"
-2026-02-26 14:34:51.917 [main] INFO  org.springframework.boot.test.mock.web.SpringBootMockServletContext - Initializing Spring TestDispatcherServlet ''
-2026-02-26 14:34:51.917 [main] INFO  org.springframework.test.web.servlet.TestDispatcherServlet - Initializing Servlet ''
-2026-02-26 14:34:51.917 [main] INFO  org.springframework.test.web.servlet.TestDispatcherServlet - Completed initialization in 0 ms
-2026-02-26 14:34:51.922 [main] INFO  com.hackathon.storywriter.controller.EventControllerTest - Started EventControllerTest in 0.151 seconds (process running for 1.401)
-2026-02-26 14:34:51.976 [main] INFO  com.hackathon.storywriter.controller.EventController - POST /api/events received: source=JUNIT, test=com.example.PaymentServiceTest#shouldProcessPayment
+2026-02-26 14:34:51.141 [background-preinit] INFO  org.hibernate.validator.internal.util.Version - HV000001: Hibernate Validator 8.0.2.Final
+2026-02-26 14:34:51.153 [main] INFO  com.hackathon.storywriter.controller.SystemControllerTest - Starting SystemControllerTest using Java 25.0.2 with PID 65282 (started by rui.cadete in /Users/rui.cadete/workspace/agents/opencode/hackaton2026feb)
+2026-02-26 14:34:51.154 [main] DEBUG com.hackathon.storywriter.controller.SystemControllerTest - Running with Spring Boot v3.4.2, Spring v6.2.2
+2026-02-26 14:34:51.154 [main] INFO  com.hackathon.storywriter.controller.SystemControllerTest - No active profile set, falling back to 1 default profile: "default"
+2026-02-26 14:34:51.427 [main] INFO  org.springframework.boot.test.mock.web.SpringBootMockServletContext - Initializing Spring TestDispatcherServlet ''
+2026-02-26 14:34:51.428 [main] INFO  org.springframework.test.web.servlet.TestDispatcherServlet - Initializing Servlet ''
+2026-02-26 14:34:51.428 [main] INFO  org.springframework.test.web.servlet.TestDispatcherServlet - Completed initialization in 0 ms
+2026-02-26 14:34:51.436 [main] INFO  com.hackathon.storywriter.controller.SystemControllerTest - Started SystemControllerTest in 0.39 seconds (process running for 0.915)
+2026-02-26 14:34:51.747 [main] DEBUG com.hackathon.storywriter.controller.SystemController - GET /_system/ping
 ]]></system-out>
+    <system-err><![CDATA[Mockito is currently self-attaching to enable the inline-mock-maker. This will no longer work in future releases of the JDK. Please add Mockito as an agent to your build what is described in Mockito's documentation: https://javadoc.io/doc/org.mockito/mockito-core/latest/org/mockito/Mockito.html#0.3
+WARNING: A Java agent has been loaded dynamically (/Users/rui.cadete/.m2/repository/net/bytebuddy/byte-buddy-agent/1.15.11/byte-buddy-agent-1.15.11.jar)
+WARNING: If a serviceability tool is in use, please run with -XX:+EnableDynamicAgentLoading to hide this warning
+WARNING: If a serviceability tool is not in use, please run with -Djdk.instrument.traceUsage for more information
+WARNING: Dynamic loading of agents will be disallowed by default in a future release
+]]></system-err>
   </testcase>
-  <testcase name="processEventWithMissingFieldReturns400" classname="com.hackathon.storywriter.controller.EventControllerTest" time="0.006">
-    <system-out><![CDATA[2026-02-26 14:34:52.001 [main] WARN  org.springframework.web.servlet.mvc.support.DefaultHandlerExceptionResolver - Resolved [org.springframework.web.bind.MethodArgumentNotValidException: Validation failed for argument [0] in public org.springframework.http.ResponseEntity<com.hackathon.storywriter.model.ArtifactResponse> com.hackathon.storywriter.controller.EventController.processEvent(com.hackathon.storywriter.model.TestFailureEvent): [Field error in object 'testFailureEvent' on field 'errorMessage': rejected value [null]; codes [NotBlank.testFailureEvent.errorMessage,NotBlank.errorMessage,NotBlank.java.lang.String,NotBlank]; arguments [org.springframework.context.support.DefaultMessageSourceResolvable: codes [testFailureEvent.errorMessage,errorMessage]; arguments []; default message [errorMessage]]; default message [errorMessage must not be blank]] ]
-]]></system-out>
-  </testcase>
-  <testcase name="processEventWithMissingSourceReturns400" classname="com.hackathon.storywriter.controller.EventControllerTest" time="0.002">
-    <system-out><![CDATA[2026-02-26 14:34:52.004 [main] WARN  org.springframework.web.servlet.mvc.support.DefaultHandlerExceptionResolver - Resolved [org.springframework.web.bind.MethodArgumentNotValidException: Validation failed for argument [0] in public org.springframework.http.ResponseEntity<com.hackathon.storywriter.model.ArtifactResponse> com.hackathon.storywriter.controller.EventController.processEvent(com.hackathon.storywriter.model.TestFailureEvent): [Field error in object 'testFailureEvent' on field 'source': rejected value [null]; codes [NotNull.testFailureEvent.source,NotNull.source,NotNull.com.hackathon.storywriter.model.TestFailureEvent$FailureSource,NotNull]; arguments [org.springframework.context.support.DefaultMessageSourceResolvable: codes [testFailureEvent.source,source]; arguments []; default message [source]]; default message [source must not be null]] ]
-]]></system-out>
-  </testcase>
-  <testcase name="healthEndpointReturns200" classname="com.hackathon.storywriter.controller.EventControllerTest" time="0.003"/>
 </testsuite>
