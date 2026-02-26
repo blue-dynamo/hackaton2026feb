@@ -76,3 +76,24 @@ Content-Type: application/json
   "testName": "com.example.SomeTest#someMethod",
   "errorMessage": "Something went wrong"
 }
+
+# ──────────────────────────────────────────────
+# API DOCUMENTATION
+# Tip: Cmd+Click (macOS) / Ctrl+Click (Windows/Linux) any URL below to open it
+#      directly in your default browser.
+# ──────────────────────────────────────────────
+
+###
+# Swagger UI — interactive API explorer
+# Cmd+Click → http://localhost:8080/swagger-ui.html
+GET {{baseUrl}}/swagger-ui.html
+
+###
+# OpenAPI spec — JSON
+# Cmd+Click → http://localhost:8080/v3/api-docs
+GET {{baseUrl}}/v3/api-docs
+
+###
+# OpenAPI spec — YAML
+# Cmd+Click → http://localhost:8080/v3/api-docs.yaml
+GET {{baseUrl}}/v3/api-docs.yaml

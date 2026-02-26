@@ -1,4 +1,5 @@
 /Users/rui.cadete/workspace/agents/opencode/hackaton2026feb/src/main/java/com/hackathon/storywriter/StoryWriterApplication.java
+/Users/rui.cadete/workspace/agents/opencode/hackaton2026feb/src/main/java/com/hackathon/storywriter/config/OpenApiConfig.java
 /Users/rui.cadete/workspace/agents/opencode/hackaton2026feb/src/main/java/com/hackathon/storywriter/controller/EventController.java
 /Users/rui.cadete/workspace/agents/opencode/hackaton2026feb/src/main/java/com/hackathon/storywriter/controller/SystemController.java
 /Users/rui.cadete/workspace/agents/opencode/hackaton2026feb/src/main/java/com/hackathon/storywriter/model/ArtifactResponse.java

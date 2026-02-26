@@ -5,6 +5,7 @@ import com.hackathon.storywriter.service.CopilotCliService;
 import com.hackathon.storywriter.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 /**
@@ -20,9 +21,13 @@ public class RootCauseAgent {
     private static final Logger log = LoggerFactory.getLogger(RootCauseAgent.class);
 
     private final CopilotCliService copilot;
+    private final String model;
 
-    public RootCauseAgent(CopilotCliService copilot) {
+    public RootCauseAgent(
+            CopilotCliService copilot,
+            @Value("${copilot.cli.agents.root-cause.model:${copilot.cli.model:gpt-4.1}}") String model) {
         this.copilot = copilot;
+        this.model = model;
     }
 
     public String analyze(TestFailureEvent event, String technicalAnalysis) {
@@ -58,7 +63,7 @@ public class RootCauseAgent {
                 technicalAnalysis
         );
 
-        return copilot.ask("RootCause", system, user);
+        return copilot.ask("RootCause", model, system, user);
     }
 
 

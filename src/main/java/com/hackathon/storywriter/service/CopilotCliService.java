@@ -1,9 +1,5 @@
 package com.hackathon.storywriter.service;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -12,153 +8,87 @@ import org.springframework.stereotype.Service;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
- * Thin wrapper around the GitHub Copilot CLI / GitHub Models API.
+ * Thin wrapper around the {@code copilot} CLI.
  *
- * <p>Strategy {@code github-models}: calls
- * <pre>gh api POST https://models.inference.ai.azure.com/chat/completions</pre>
- * using the currently authenticated GitHub token.
- *
- * <p>Strategy {@code explain}: calls {@code gh copilot explain "<prompt>"}
- * for a lightweight demo without GitHub Models access.
+ * <p>Each agent call combines the system persona and the user prompt into a
+ * single text block and invokes:
+ * <pre>copilot --model &lt;model&gt; -s -p "&lt;combined prompt&gt;" --yolo</pre>
+ * Flags used:
+ * <ul>
+ *   <li>{@code --model} — LLM model passed by each individual agent</li>
+ *   <li>{@code -s} — silent / suppress interactive UI</li>
+ *   <li>{@code -p} — non-interactive prompt</li>
+ *   <li>{@code --yolo} — skip confirmation prompts, run non-interactively</li>
+ * </ul>
  */
 @Service
 public class CopilotCliService {
 
     private static final Logger log = LoggerFactory.getLogger(CopilotCliService.class);
 
-    @Value("${copilot.cli.strategy:github-models}")
-    private String strategy;
-
-    @Value("${copilot.cli.models-endpoint:https://models.inference.ai.azure.com/chat/completions}")
-    private String modelsEndpoint;
-
-    @Value("${copilot.cli.model:gpt-4o-mini}")
-    private String model;
-
     @Value("${copilot.cli.timeout-seconds:60}")
     private int timeoutSeconds;
 
-    private final ObjectMapper objectMapper;
-
-    public CopilotCliService(ObjectMapper objectMapper) {
-        this.objectMapper = objectMapper;
-    }
-
     /**
-     * Sends {@code prompt} to GitHub Copilot (via CLI) and returns the raw text response.
+     * Sends {@code systemMsg} + {@code userPrompt} to the Copilot CLI and returns the
+     * raw text response.
      *
      * @param agentRole  Short label used in logs (e.g. "TechnicalAnalyzer")
+     * @param model      Model identifier passed to {@code copilot --model} (e.g. "gpt-4.1")
      * @param systemMsg  System message that configures the agent's persona
      * @param userPrompt Constructed user prompt with failure context
      * @return AI-generated text response
      */
-    public String ask(String agentRole, String systemMsg, String userPrompt) {
-        log.info("[{}] Invoking Copilot CLI (strategy={})", agentRole, strategy);
-
-        return switch (strategy) {
-            case "github-models" -> askViaGithubModels(agentRole, systemMsg, userPrompt);
-            case "explain" -> askViaCopilotExplain(agentRole, userPrompt);
-            default -> throw new IllegalStateException("Unknown strategy: " + strategy);
-        };
+    public String ask(String agentRole, String model, String systemMsg, String userPrompt) {
+        log.info("[{}] Invoking copilot CLI (model={})", agentRole, model);
+        return askViaCopilotCli(agentRole, model, systemMsg, userPrompt);
     }
 
     // -------------------------------------------------------------------------
-    // GitHub Models strategy
+    // copilot CLI
     // -------------------------------------------------------------------------
 
-    private String askViaGithubModels(String agentRole, String systemMsg, String userPrompt) {
+    private String askViaCopilotCli(String agentRole, String model, String systemMsg, String userPrompt) {
+        // Combine system persona and user request into a single prompt.
+        String combinedPrompt = systemMsg.strip() + "\n\n" + userPrompt.strip();
+
+        log.debug("[{}] ── INPUT PROMPT ─────────────────────────────────────\n{}\n──────────────────────────────────────────────────────",
+                agentRole, combinedPrompt);
+
         try {
-            ObjectNode body = objectMapper.createObjectNode();
-            body.put("model", model);
-
-            ArrayNode messages = body.putArray("messages");
-            ObjectNode systemNode = messages.addObject();
-            systemNode.put("role", "system");
-            systemNode.put("content", systemMsg);
-
-            ObjectNode userNode = messages.addObject();
-            userNode.put("role", "user");
-            userNode.put("content", userPrompt);
-
-            String jsonBody = objectMapper.writeValueAsString(body);
-
             ProcessBuilder pb = new ProcessBuilder(
-                    "gh", "api",
-                    "--method", "POST",
-                    modelsEndpoint,
-                    "--header", "Content-Type: application/json",
-                    "--input", "-"
+                    "copilot", "--model", model, "-s", "-p", combinedPrompt, "--yolo"
             );
             pb.redirectErrorStream(false);
 
             Process process = pb.start();
-
-            // Write JSON body to stdin
-            try (OutputStream stdin = process.getOutputStream()) {
-                stdin.write(jsonBody.getBytes(StandardCharsets.UTF_8));
-            }
-
             String stdout = readStream(process.getInputStream());
             String stderr = readStream(process.getErrorStream());
 
             boolean finished = process.waitFor(timeoutSeconds, TimeUnit.SECONDS);
             if (!finished) {
                 process.destroyForcibly();
-                throw new RuntimeException("[" + agentRole + "] gh api timed out after " + timeoutSeconds + "s");
+                throw new RuntimeException("[" + agentRole + "] copilot timed out after " + timeoutSeconds + "s");
             }
 
             if (process.exitValue() != 0) {
-                log.error("[{}] gh api exited with code {}: {}", agentRole, process.exitValue(), stderr);
-                throw new RuntimeException("[" + agentRole + "] gh api failed: " + stderr);
+                log.error("[{}] copilot exited {}: {}", agentRole, process.exitValue(), stderr);
+                throw new RuntimeException("[" + agentRole + "] copilot failed: " + stderr);
             }
 
-            // Parse OpenAI-compatible response
-            JsonNode root = objectMapper.readTree(stdout);
-            return root.path("choices").get(0).path("message").path("content").asText();
-
-        } catch (RuntimeException e) {
-            throw e;
-        } catch (Exception e) {
-            throw new RuntimeException("[" + agentRole + "] GitHub Models call failed", e);
-        }
-    }
-
-    // -------------------------------------------------------------------------
-    // gh copilot explain strategy (fallback / demo)
-    // -------------------------------------------------------------------------
-
-    private String askViaCopilotExplain(String agentRole, String userPrompt) {
-        try {
-            // gh copilot explain takes the target text as a positional argument
-            ProcessBuilder pb = new ProcessBuilder("gh", "copilot", "explain", userPrompt);
-            pb.redirectErrorStream(false);
-
-            Process process = pb.start();
-            String stdout = readStream(process.getInputStream());
-            String stderr = readStream(process.getErrorStream());
-
-            boolean finished = process.waitFor(timeoutSeconds, TimeUnit.SECONDS);
-            if (!finished) {
-                process.destroyForcibly();
-                throw new RuntimeException("[" + agentRole + "] gh copilot explain timed out");
-            }
-
-            if (process.exitValue() != 0) {
-                log.error("[{}] gh copilot explain exited {}: {}", agentRole, process.exitValue(), stderr);
-                throw new RuntimeException("[" + agentRole + "] gh copilot explain failed: " + stderr);
-            }
-
+            log.debug("[{}] ── OUTPUT ({} chars) ────────────────────────────────\n{}\n──────────────────────────────────────────────────────",
+                    agentRole, stdout.length(), stdout);
             return stdout;
+
         } catch (RuntimeException e) {
             throw e;
         } catch (Exception e) {
-            throw new RuntimeException("[" + agentRole + "] gh copilot explain failed", e);
+            throw new RuntimeException("[" + agentRole + "] copilot CLI failed", e);
         }
     }
 

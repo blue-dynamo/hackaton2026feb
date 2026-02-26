@@ -39,25 +39,27 @@ class StoryWriterIntegrationTest {
     @DisplayName("Full context loads and POST /api/events returns JSON artifact")
     void contextLoadsAndEventEndpointWorks() throws Exception {
         ArtifactResponse mockArtifact = new ArtifactResponse(
-                "Technical: DB connection timeout",
-                "Root cause: misconfigured connection pool",
+                new ArtifactResponse.TechnicalAnalysis("Technical: DB connection timeout", 0L),
+                new ArtifactResponse.RootCause("Root cause: misconfigured connection pool", 0L),
                 new ArtifactResponse.BugReport(
                         "DB timeout on order lookup",
                         "Connection pool exhausted",
                         "1. Load test with 100 concurrent users",
                         "Orders returned within 200ms",
                         "Timeout after 30s",
-                        null
+                        null,
+                        0L
                 ),
                 new ArtifactResponse.UserStory(
                         "customer",
                         "retrieve my orders quickly",
                         "I get a responsive shopping experience",
                         "Given authenticated user\nWhen viewing orders\nThen response within 500ms",
-                        null
+                        null,
+                        0L
                 ),
-                new ArtifactResponse.SeverityAssessment("P2", "High-traffic core feature degraded", null),
-                new ArtifactResponse.PipelineMetrics(0L, 0L, 0L, 0L, 0L, 0L)
+                new ArtifactResponse.SeverityAssessment("P2", "High-traffic core feature degraded", null, 0L),
+                0L
         );
 
         when(orchestratorService.process(any(TestFailureEvent.class))).thenReturn(mockArtifact);
@@ -75,7 +77,7 @@ class StoryWriterIntegrationTest {
                         .content(objectMapper.writeValueAsString(event)))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.technicalAnalysis").value("Technical: DB connection timeout"))
+                .andExpect(jsonPath("$.technicalAnalysis.content").value("Technical: DB connection timeout"))
                 .andExpect(jsonPath("$.severity.level").value("P2"))
                 .andExpect(jsonPath("$.bugReport.title").value("DB timeout on order lookup"))
                 .andExpect(jsonPath("$.userStory.asA").value("customer"));

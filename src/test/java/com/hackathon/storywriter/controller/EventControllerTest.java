@@ -49,25 +49,27 @@ class EventControllerTest {
         );
 
         ArtifactResponse mockArtifact = new ArtifactResponse(
-                "NullPointerException in PaymentService.process()",
-                "Missing null-check on Optional<Payment>",
+                new ArtifactResponse.TechnicalAnalysis("NullPointerException in PaymentService.process()", 0L),
+                new ArtifactResponse.RootCause("Missing null-check on Optional<Payment>", 0L),
                 new BugReport(
                         "Payment processing fails with HTTP 500",
                         "PaymentService throws NPE when payment is null",
                         "1. Call POST /payments with empty body",
                         "HTTP 200 with processed payment",
                         "HTTP 500 with NullPointerException",
-                        null
+                        null,
+                        0L
                 ),
                 new UserStory(
                         "customer",
                         "complete a payment without errors",
                         "I can successfully purchase items",
                         "Given a valid checkout\nWhen I submit payment\nThen I receive HTTP 200",
-                        null
+                        null,
+                        0L
                 ),
-                new SeverityAssessment("P1", "Production payment flow is broken.", null),
-                new ArtifactResponse.PipelineMetrics(0L, 0L, 0L, 0L, 0L, 0L)
+                new SeverityAssessment("P1", "Production payment flow is broken.", null, 0L),
+                0L
         );
 
         when(orchestratorService.process(any(TestFailureEvent.class))).thenReturn(mockArtifact);

@@ -95,13 +95,6 @@
 				"-y",
 				"@blizzy/mcp-elicit"
 			]
-		},
-		"docker-mcp-server": {
-			"type": "stdio",
-			"command": "uvx",
-			"args": [
-				"mcp-server-docker"
-			]
 		}
 	},
 	"inputs": []

@@ -2,8 +2,8 @@
 
 ## Project Summary
 
-**story-writer** is a Spring Boot 3 / Java 21 service that uses GitHub Copilot CLI
-(via `gh api` / GitHub Models) to automatically generate bug reports and user stories
+**story-writer** is a Spring Boot 3 / Java 21 service that uses the `copilot` CLI
+(`copilot --model gpt-4.1 -s -p "<prompt>" --yolo`) to automatically generate bug reports and user stories
 from test failures (JUnit, MockMvc, Concordion) and application logs.
 
 ## Big Picture Architecture
@@ -25,9 +25,8 @@ OrchestratorService  (deterministic, non-LLM, Spring @Service)
 ArtifactResponse  (JSON: technicalAnalysis, rootCause, bugReport, userStory, severity)
 ```
 
-Each agent service calls `CopilotCliService`, which invokes the GitHub CLI:
-- **github-models** strategy (default): `gh api POST https://models.inference.ai.azure.com/chat/completions`
-- **explain** strategy (demo fallback): `gh copilot explain "<prompt>"`
+Each agent service calls `CopilotCliService`, which in turn calls:
+- `copilot --model <model> -s -p "<system_context + user_prompt>" --yolo` — the system persona and user prompt are combined into a single string.
 
 - The project uses a modular, agent-driven architecture. Custom agents are defined in `.github/agents/` with clear roles (e.g., Orchestrator, Technical Analyzer, Root Cause, Bug Writer, Story Writer, Severity).
 - Each agent file follows a strict YAML frontmatter and markdown structure, specifying description, tools, and model.
@@ -38,18 +37,7 @@ Each agent service calls `CopilotCliService`, which invokes the GitHub CLI:
 - **Build:** `mvn clean package` — Java 21, Spring Boot 3.4.2
 - **Run:** `mvn spring-boot:run` — starts on `http://localhost:8080`
 - **Test:** `mvn test` — runs JUnit, MockMvc, and Concordion tests
-- **Copilot CLI prerequisite:** `gh auth login` must be completed before running the service
-
-### Switching AI Strategy
-
-Edit `application.yml`:
-```yaml
-copilot:
-  cli:
-    strategy: github-models   # → gh api GitHub Models endpoint (default)
-    # strategy: explain       # → gh copilot explain (demo fallback)
-    model: gpt-4o-mini
-```
+- **Copilot CLI prerequisite:** `copilot` CLI must be installed and authenticated before running the service
 
 ### Sending a Test Event (curl)
 

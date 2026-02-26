@@ -1,88 +1,85 @@
 package com.hackathon.storywriter.model;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
 /**
  * Final aggregated artifact produced by the orchestrator from all sub-agent outputs.
  */
+@Schema(description = "Aggregated artifact produced by the multi-agent pipeline")
 public record ArtifactResponse(
 
-        String technicalAnalysis,
+        @Schema(description = "Technical analysis of the failure produced by TechnicalAnalyzerAgent")
+        TechnicalAnalysis technicalAnalysis,
 
-        String rootCause,
+        @Schema(description = "Root cause identified by RootCauseAgent")
+        RootCause rootCause,
 
+        @Schema(description = "Structured bug report produced by BugWriterAgent")
         BugReport bugReport,
 
+        @Schema(description = "User story produced by StoryWriterAgent in Connextra format")
         UserStory userStory,
 
+        @Schema(description = "Severity assessment produced by SeverityAgent")
         SeverityAssessment severity,
 
-        PipelineMetrics metrics
+        @Schema(description = "Total wall-clock time for the full pipeline (ms)")
+        long totalMs
 ) {
 
     /**
-     * Structured bug report produced by the Bug Writer Agent.
-     *
-     * @param title         Short, descriptive title
-     * @param description   Detailed description of the defect
-     * @param stepsToReproduce Steps to reproduce the failure
-     * @param expectedBehavior What should have happened
-     * @param actualBehavior   What actually happened
-     * @param confidence       Model confidence in this report (0.0–1.0), or null if unavailable
+     * Technical analysis produced by TechnicalAnalyzerAgent.
      */
+    @Schema(description = "Technical analysis output")
+    public record TechnicalAnalysis(
+            @Schema(description = "Analysis text") String content,
+            @Schema(description = "Agent execution time (ms)") long durationMs
+    ) {}
+
+    /**
+     * Root cause produced by RootCauseAgent.
+     */
+    @Schema(description = "Root cause output")
+    public record RootCause(
+            @Schema(description = "Root cause text") String content,
+            @Schema(description = "Agent execution time (ms)") long durationMs
+    ) {}
+
+    /**
+     * Structured bug report produced by the Bug Writer Agent.
+     */
+    @Schema(description = "Structured bug report")
     public record BugReport(
-            String title,
-            String description,
-            String stepsToReproduce,
-            String expectedBehavior,
-            String actualBehavior,
-            Double confidence
+            @Schema(description = "Short, descriptive title") String title,
+            @Schema(description = "Detailed description of the defect") String description,
+            @Schema(description = "Steps to reproduce the failure") String stepsToReproduce,
+            @Schema(description = "What should have happened") String expectedBehavior,
+            @Schema(description = "What actually happened") String actualBehavior,
+            @Schema(description = "Model confidence in this report (0.0\u20131.0)") Double confidence,
+            @Schema(description = "Agent execution time (ms)") long durationMs
     ) {}
 
     /**
      * User story produced by the Story Writer Agent following Connextra format.
-     *
-     * @param asA               Role affected by the bug
-     * @param iWant             Feature / behaviour desired
-     * @param soThat           Business value
-     * @param acceptanceCriteria Gherkin-style or plain-English acceptance criteria
-     * @param confidence         Model confidence in this story (0.0–1.0), or null if unavailable
      */
+    @Schema(description = "User story in Connextra format")
     public record UserStory(
-            String asA,
-            String iWant,
-            String soThat,
-            String acceptanceCriteria,
-            Double confidence
+            @Schema(description = "Role affected by the bug") String asA,
+            @Schema(description = "Feature / behaviour desired") String iWant,
+            @Schema(description = "Business value") String soThat,
+            @Schema(description = "Gherkin-style acceptance criteria") String acceptanceCriteria,
+            @Schema(description = "Model confidence (0.0\u20131.0)") Double confidence,
+            @Schema(description = "Agent execution time (ms)") long durationMs
     ) {}
 
     /**
      * Severity assessment produced by the Severity Agent.
-     *
-     * @param level      P1 | P2 | P3 | P4
-     * @param rationale  Explanation for the chosen severity
-     * @param confidence Model confidence in this assessment (0.0–1.0), or null if unavailable
      */
+    @Schema(description = "Severity assessment")
     public record SeverityAssessment(
-            String level,
-            String rationale,
-            Double confidence
-    ) {}
-
-    /**
-     * Per-agent execution timing telemetry for the full pipeline.
-     *
-     * @param technicalAnalyzerMs Wall-clock time spent in TechnicalAnalyzerAgent (ms)
-     * @param rootCauseMs         Wall-clock time spent in RootCauseAgent (ms)
-     * @param bugWriterMs         Wall-clock time spent in BugWriterAgent (ms)
-     * @param storyWriterMs       Wall-clock time spent in StoryWriterAgent (ms)
-     * @param severityMs          Wall-clock time spent in SeverityAgent (ms)
-     * @param totalMs             Total wall-clock time for the full pipeline (ms)
-     */
-    public record PipelineMetrics(
-            long technicalAnalyzerMs,
-            long rootCauseMs,
-            long bugWriterMs,
-            long storyWriterMs,
-            long severityMs,
-            long totalMs
+            @Schema(description = "Severity level: P1 | P2 | P3 | P4", example = "P2") String level,
+            @Schema(description = "Explanation for the chosen severity") String rationale,
+            @Schema(description = "Model confidence (0.0\u20131.0)") Double confidence,
+            @Schema(description = "Agent execution time (ms)") long durationMs
     ) {}
 }

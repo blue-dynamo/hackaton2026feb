@@ -62,11 +62,21 @@ Phase 3: BugWriter + StoryWriter + Severity  →  merged ArtifactResponse JSON
 	 ```
 	 Or open `requests.http` in VS Code with the [REST Client](https://marketplace.visualstudio.com/items?itemName=humao.rest-client) extension and click **Send Request** on any example.
 
-## Additional Information
+## API Documentation
 
-- **Switch AI strategy:** Edit `src/main/resources/application.yml` to use `github-models` (default) or `explain` (demo fallback)
+Once the service is running, the interactive Swagger UI and the raw OpenAPI spec are available at:
+
+| Resource | URL |
+|---|---|
+| Swagger UI | http://localhost:8080/swagger-ui.html |
+| OpenAPI JSON spec | http://localhost:8080/v3/api-docs |
+| OpenAPI YAML spec | http://localhost:8080/v3/api-docs.yaml |
+
+- **AI backbone:** All LLM calls use the `copilot` CLI — `copilot --model gpt-4.1 -s -p "<prompt>" --yolo`
+- **Prerequisite:** `copilot` must be installed and authenticated before starting the service
+- **Change model:** Edit `copilot.cli.model` in `src/main/resources/application.yml`
 - **Test frameworks supported:** JUnit, Spring Boot Test/MockMvc, Concordion
-- **All LLM calls** are routed through `CopilotCliService` (calls `gh api` or `gh copilot explain`)
+- **All LLM calls** are routed through `CopilotCliService` (`gh copilot explain`)
 - **No LLM in orchestrator:** OrchestratorService is deterministic, only routes/merges agent outputs
 - **Tests:** Run `mvn test` (unit, integration, Concordion BDD)
 - **Agent files:** See `.github/agents/*.agent.md` for Copilot agent definitions and handoff workflows

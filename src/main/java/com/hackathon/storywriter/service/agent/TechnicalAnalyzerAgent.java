@@ -22,11 +22,14 @@ public class TechnicalAnalyzerAgent {
 
     private final CopilotCliService copilot;
     private final int maxStacktraceChars;
+    private final String model;
 
     public TechnicalAnalyzerAgent(
             CopilotCliService copilot,
+            @Value("${copilot.cli.agents.technical-analyzer.model:${copilot.cli.model:gpt-4.1}}") String model,
             @Value("${copilot.cli.max-stacktrace-chars:3000}") int maxStacktraceChars) {
         this.copilot = copilot;
+        this.model = model;
         this.maxStacktraceChars = maxStacktraceChars;
     }
 
@@ -68,7 +71,7 @@ public class TechnicalAnalyzerAgent {
                 Strings.nvl(event.context())
         );
 
-        return copilot.ask("TechnicalAnalyzer", system, user);
+        return copilot.ask("TechnicalAnalyzer", model, system, user);
     }
 
 

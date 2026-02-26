@@ -2,7 +2,9 @@ package com.hackathon.storywriter.service;
 
 import com.hackathon.storywriter.model.ArtifactResponse;
 import com.hackathon.storywriter.model.ArtifactResponse.BugReport;
+import com.hackathon.storywriter.model.ArtifactResponse.RootCause;
 import com.hackathon.storywriter.model.ArtifactResponse.SeverityAssessment;
+import com.hackathon.storywriter.model.ArtifactResponse.TechnicalAnalysis;
 import com.hackathon.storywriter.model.ArtifactResponse.UserStory;
 import com.hackathon.storywriter.model.TestFailureEvent;
 import com.hackathon.storywriter.service.agent.*;
@@ -147,17 +149,31 @@ public class OrchestratorService {
             CompletableFuture.allOf(bugFuture, storyFuture, severityFuture).join();
 
             long totalMs = System.currentTimeMillis() - pipelineStart;
-            ArtifactResponse.PipelineMetrics metrics = new ArtifactResponse.PipelineMetrics(
-                    techMs.get(), rootMs.get(), bugMs.get(), storyMs.get(), severityMs.get(), totalMs);
+
+            // Wrap plain-text results in their record types with timing
+            TechnicalAnalysis technicalAnalysis = new TechnicalAnalysis(techFuture.get(), techMs.get());
+            RootCause rootCause = new RootCause(rootFuture.get(), rootMs.get());
+
+            // Reconstruct JSON-parsed records with orchestrator-measured durationMs
+            BugReport rawBug = bugFuture.get();
+            BugReport bugReport = new BugReport(
+                    rawBug.title(), rawBug.description(), rawBug.stepsToReproduce(),
+                    rawBug.expectedBehavior(), rawBug.actualBehavior(), rawBug.confidence(),
+                    bugMs.get());
+
+            UserStory rawStory = storyFuture.get();
+            UserStory userStory = new UserStory(
+                    rawStory.asA(), rawStory.iWant(), rawStory.soThat(),
+                    rawStory.acceptanceCriteria(), rawStory.confidence(),
+                    storyMs.get());
+
+            SeverityAssessment rawSeverity = severityFuture.get();
+            SeverityAssessment severity = new SeverityAssessment(
+                    rawSeverity.level(), rawSeverity.rationale(), rawSeverity.confidence(),
+                    severityMs.get());
 
             ArtifactResponse artifact = new ArtifactResponse(
-                    techFuture.get(),
-                    rootFuture.get(),
-                    bugFuture.get(),
-                    storyFuture.get(),
-                    severityFuture.get(),
-                    metrics
-            );
+                    technicalAnalysis, rootCause, bugReport, userStory, severity, totalMs);
 
             log.info("Orchestrator pipeline completed in {}ms "
                              + "(tech={}ms root={}ms bug={}ms story={}ms severity={}ms). Severity={}",

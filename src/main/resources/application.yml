@@ -10,12 +10,21 @@ spring:
 
 copilot:
   cli:
-    # Strategy: 'github-models' (recommended) or 'explain' (gh copilot explain)
-    strategy: github-models
-    # GitHub Models endpoint - uses 'gh auth token' automatically via gh CLI
-    models-endpoint: https://models.inference.ai.azure.com/chat/completions
-    model: gpt-4o-mini
-    # Timeout for each CLI call in seconds
+    # Default model used when no per-agent override is set
+    model: gpt-4.1
+    # Per-agent model overrides — uncomment and change to use a different model per agent
+    agents:
+      technical-analyzer:
+        model: ${copilot.cli.model}
+      root-cause:
+        model: ${copilot.cli.model}
+      bug-writer:
+        model: ${copilot.cli.model}
+      story-writer:
+        model: ${copilot.cli.model}
+      severity:
+        model: ${copilot.cli.model}
+    # Timeout for each copilot CLI call in seconds
     timeout-seconds: 60
     # Max chars of stacktrace to include in prompt (prevent token overflow)
     max-stacktrace-chars: 3000

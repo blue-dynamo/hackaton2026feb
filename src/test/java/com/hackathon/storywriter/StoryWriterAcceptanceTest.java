@@ -22,14 +22,14 @@ public class StoryWriterAcceptanceTest {
     public String processSampleJunitFailure(String errorMessage) {
         // Simulate what the orchestrator returns for a P2-class failure
         ArtifactResponse artifact = new ArtifactResponse(
-                "Technical: " + errorMessage,
-                "Root cause identified",
+                new ArtifactResponse.TechnicalAnalysis("Technical: " + errorMessage, 0L),
+                new ArtifactResponse.RootCause("Root cause identified", 0L),
                 new ArtifactResponse.BugReport(
-                        "Bug: " + errorMessage, "Description", "Steps", "Expected", "Actual", null),
+                        "Bug: " + errorMessage, "Description", "Steps", "Expected", "Actual", null, 0L),
                 new ArtifactResponse.UserStory("user", "fix " + errorMessage, "stability",
-                        "Given a valid request\nWhen submitted\nThen it succeeds", null),
-                new ArtifactResponse.SeverityAssessment("P2", "Core feature impacted", null),
-                new ArtifactResponse.PipelineMetrics(0L, 0L, 0L, 0L, 0L, 0L)
+                        "Given a valid request\nWhen submitted\nThen it succeeds", null, 0L),
+                new ArtifactResponse.SeverityAssessment("P2", "Core feature impacted", null, 0L),
+                0L
         );
         return artifact.severity().level();
     }

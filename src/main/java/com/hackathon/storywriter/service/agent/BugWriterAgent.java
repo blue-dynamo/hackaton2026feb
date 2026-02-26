@@ -7,6 +7,7 @@ import com.hackathon.storywriter.util.Strings;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 /**
@@ -21,10 +22,15 @@ public class BugWriterAgent {
     private static final Logger log = LoggerFactory.getLogger(BugWriterAgent.class);
     private final CopilotCliService copilot;
     private final ObjectMapper objectMapper;
+    private final String model;
 
-    public BugWriterAgent(CopilotCliService copilot, ObjectMapper objectMapper) {
+    public BugWriterAgent(
+            CopilotCliService copilot,
+            ObjectMapper objectMapper,
+            @Value("${copilot.cli.agents.bug-writer.model:${copilot.cli.model:gpt-4.1}}") String model) {
         this.copilot = copilot;
         this.objectMapper = objectMapper;
+        this.model = model;
     }
 
     public BugReport write(TestFailureEvent event, String technicalAnalysis, String rootCause) {
@@ -65,7 +71,7 @@ public class BugWriterAgent {
                 rootCause
         );
 
-        String raw = copilot.ask("BugWriter", system, user);
+        String raw = copilot.ask("BugWriter", model, system, user);
         return parseOrFallback(raw, event);
     }
 
@@ -80,7 +86,8 @@ public class BugWriterAgent {
                     Strings.nvl(event.testName()),
                     "(not parsed)",
                     event.errorMessage(),
-                    null
+                    null,
+                    0L
             );
         }
     }
