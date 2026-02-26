@@ -58,6 +58,19 @@ Content-Type: application/json
 }
 
 ###
+
+# Application log failure — MySQL XA deadlock in GroupServiceCollectionEndpoint
+POST {{baseUrl}}/api/events
+Content-Type: application/json
+
+{
+  "source": "LOG",
+  "testName": "net.nfon.portal.api.customer.group.service.GroupServiceCollectionEndpoint.post(GroupServiceCollectionEndpoint.java:103)",
+  "errorMessage": "com.mysql.jdbc.jdbc2.optional.MysqlXAException: XA_RBDEADLOCK: Transaction branch was rolled back: deadlock was detected",
+  "stackTrace": "com.mysql.jdbc.jdbc2.optional.MysqlXAException: XA_RBDEADLOCK: Transaction branch was rolled back: deadlock was detected\n\tat com.mysql.jdbc.jdbc2.optional.MysqlXAConnection.mapXAExceptionFromSQLException(MysqlXAConnection.java:583)\n\tat com.mysql.jdbc.jdbc2.optional.MysqlXAConnection.dispatchCommand(MysqlXAConnection.java:568)\n\tat com.mysql.jdbc.jdbc2.optional.MysqlXAConnection.end(MysqlXAConnection.java:464)",
+  "context": "logs source; exception observed in GroupServiceCollectionEndpoint.post at line 103"
+}
+
 # Validation error — missing required field (expects 400)
 POST {{baseUrl}}/api/events
 Content-Type: application/json

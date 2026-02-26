@@ -2,7 +2,7 @@
 description: 'Translates a test failure into a business-oriented user story in Connextra format with Gherkin acceptance criteria'
 name: 'Story Writer'
 tools: ['read', 'search']
-model: 'Claude Sonnet 4.5'
+model: 'gpt-4.1'
 target: 'vscode'
 handoffs:
   - label: Write Bug Report

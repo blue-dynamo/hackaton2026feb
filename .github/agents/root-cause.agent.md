@@ -2,7 +2,7 @@
 description: 'Deduces the root cause of a test failure using technical analysis and suggests fix directions'
 name: 'Root Cause'
 tools: ['read', 'search']
-model: 'Claude Sonnet 4.5'
+model: 'gpt-4.1'
 target: 'vscode'
 handoffs:
   - label: Write Bug Report

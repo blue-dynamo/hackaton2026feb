@@ -2,7 +2,7 @@
 description: 'Writes a structured, actionable bug report from a test failure and its root cause analysis'
 name: 'Bug Writer'
 tools: ['read', 'search']
-model: 'Claude Sonnet 4.5'
+model: 'gpt-4.1'
 target: 'vscode'
 handoffs:
   - label: Assess Severity

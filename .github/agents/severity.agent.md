@@ -2,7 +2,7 @@
 description: 'Triages and assigns a P1–P4 severity level to a failure based on its technical impact and root cause'
 name: 'Severity'
 tools: ['read', 'search']
-model: 'Claude Sonnet 4.5'
+model: 'gpt-4.1'
 target: 'vscode'
 ---
 
