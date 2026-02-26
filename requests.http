@@ -50,7 +50,7 @@ POST {{baseUrl}}/api/events
 Content-Type: application/json
 
 {
-  "source": "LOGS",
+  "source": "LOG",
   "testName": null,
   "errorMessage": "NullPointerException: Cannot invoke method getStock() on null object",
   "stackTrace": "java.lang.NullPointerException: Cannot invoke method getStock() on null object\n\tat com.example.InventoryService.checkAvailability(InventoryService.java:113)\n\tat com.example.OrderService.createOrder(OrderService.java:67)",
@@ -64,7 +64,7 @@ POST {{baseUrl}}/api/events
 Content-Type: application/json
 
 {
-  "source": "LOGS",
+  "source": "LOG",
   "testName": "net.nfon.portal.api.customer.group.service.GroupServiceCollectionEndpoint.post(GroupServiceCollectionEndpoint.java:103)",
   "errorMessage": "com.mysql.jdbc.jdbc2.optional.MysqlXAException: XA_RBDEADLOCK: Transaction branch was rolled back: deadlock was detected",
   "stackTrace": "com.mysql.jdbc.jdbc2.optional.MysqlXAException: XA_RBDEADLOCK: Transaction branch was rolled back: deadlock was detected\n\tat com.mysql.jdbc.jdbc2.optional.MysqlXAConnection.mapXAExceptionFromSQLException(MysqlXAConnection.java:583)\n\tat com.mysql.jdbc.jdbc2.optional.MysqlXAConnection.dispatchCommand(MysqlXAConnection.java:568)\n\tat com.mysql.jdbc.jdbc2.optional.MysqlXAConnection.end(MysqlXAConnection.java:464)",

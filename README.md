@@ -60,7 +60,7 @@ POST a `TestFailureEvent` JSON payload to `/api/events`. The service runs it thr
 
 | Field | Type | Required | Description |
 |-------|------|----------|-------------|
-| `source` | enum | ✅ | `JUNIT`, `MOCK_MVC`, `CONCORDION`, `LOGS` |
+| `source` | enum | ✅ | `JUNIT`, `MOCK_MVC`, `CONCORDION`, `LOG` |
 | `errorMessage` | string | ✅ | The error or exception message |
 | `testName` | string | — | Fully-qualified test method or origin |
 | `stackTrace` | string | — | Full stack trace text |
@@ -86,7 +86,7 @@ curl -X POST http://localhost:8080/api/events \
 curl -X POST http://localhost:8080/api/events \
   -H "Content-Type: application/json" \
   -d '{
-    "source": "LOGS",
+    "source": "LOG",
     "testName": "net.nfon.portal.api.customer.group.service.GroupServiceCollectionEndpoint.post(GroupServiceCollectionEndpoint.java:103)",
     "errorMessage": "com.mysql.jdbc.jdbc2.optional.MysqlXAException: XA_RBDEADLOCK: Transaction branch was rolled back: deadlock was detected",
     "stackTrace": "com.mysql.jdbc.jdbc2.optional.MysqlXAException: XA_RBDEADLOCK: Transaction branch was rolled back: deadlock was detected\n\tat com.mysql.jdbc.jdbc2.optional.MysqlXAConnection.mapXAExceptionFromSQLException(MysqlXAConnection.java:583)\n\tat com.mysql.jdbc.jdbc2.optional.MysqlXAConnection.dispatchCommand(MysqlXAConnection.java:568)\n\tat com.mysql.jdbc.jdbc2.optional.MysqlXAConnection.end(MysqlXAConnection.java:464)",
