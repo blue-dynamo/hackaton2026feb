@@ -1,0 +1,27 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: story-writer
+  jackson:
+    serialization:
+      indent-output: true
+
+copilot:
+  cli:
+    # Strategy: 'github-models' (recommended) or 'explain' (gh copilot explain)
+    strategy: github-models
+    # GitHub Models endpoint - uses 'gh auth token' automatically via gh CLI
+    models-endpoint: https://models.inference.ai.azure.com/chat/completions
+    model: gpt-4o-mini
+    # Timeout for each CLI call in seconds
+    timeout-seconds: 60
+    # Max chars of stacktrace to include in prompt (prevent token overflow)
+    max-stacktrace-chars: 3000
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info

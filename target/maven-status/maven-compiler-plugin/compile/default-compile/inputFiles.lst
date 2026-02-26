@@ -1,0 +1,11 @@
+/Users/rui.cadete/workspace/agents/opencode/hackaton2026feb/src/main/java/com/hackathon/storywriter/StoryWriterApplication.java
+/Users/rui.cadete/workspace/agents/opencode/hackaton2026feb/src/main/java/com/hackathon/storywriter/controller/EventController.java
+/Users/rui.cadete/workspace/agents/opencode/hackaton2026feb/src/main/java/com/hackathon/storywriter/model/ArtifactResponse.java
+/Users/rui.cadete/workspace/agents/opencode/hackaton2026feb/src/main/java/com/hackathon/storywriter/model/TestFailureEvent.java
+/Users/rui.cadete/workspace/agents/opencode/hackaton2026feb/src/main/java/com/hackathon/storywriter/service/CopilotCliService.java
+/Users/rui.cadete/workspace/agents/opencode/hackaton2026feb/src/main/java/com/hackathon/storywriter/service/OrchestratorService.java
+/Users/rui.cadete/workspace/agents/opencode/hackaton2026feb/src/main/java/com/hackathon/storywriter/service/agent/BugWriterAgent.java
+/Users/rui.cadete/workspace/agents/opencode/hackaton2026feb/src/main/java/com/hackathon/storywriter/service/agent/RootCauseAgent.java
+/Users/rui.cadete/workspace/agents/opencode/hackaton2026feb/src/main/java/com/hackathon/storywriter/service/agent/SeverityAgent.java
+/Users/rui.cadete/workspace/agents/opencode/hackaton2026feb/src/main/java/com/hackathon/storywriter/service/agent/StoryWriterAgent.java
+/Users/rui.cadete/workspace/agents/opencode/hackaton2026feb/src/main/java/com/hackathon/storywriter/service/agent/TechnicalAnalyzerAgent.java

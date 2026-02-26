@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns:concordion="http://www.concordion.org/2007/concordion">
+<head>
+    <title>Story Writer Acceptance Tests</title>
+    <meta charset="UTF-8"/>
+</head>
+<body>
+
+<h1>AI-Empowered Story Writer — Acceptance Tests</h1>
+
+<p>
+    The system receives a test failure event and produces a validated artifact
+    containing a technical analysis, root cause, bug report, user story, and severity assessment.
+</p>
+
+<h2>Feature: Severity Assessment from JUnit Failure</h2>
+
+<p>
+    Given a JUnit test failure with error message
+    <b concordion:set="#errorMessage">AssertionError: expected 200 but was 500</b>,
+    when the event is processed through the agent pipeline,
+    then the severity level returned should be
+    <b concordion:assertEquals="processSampleJunitFailure(#errorMessage)">P2</b>.
+</p>
+
+<h2>Feature: Bug Title Generation</h2>
+
+<p>
+    For an error message
+    <b concordion:set="#error">NullPointerException in PaymentService</b>,
+    the generated bug title should be
+    <b concordion:assertEquals="getBugTitle(#error)">Bug: NullPointerException in PaymentService</b>.
+</p>
+
+</body>
+</html>
