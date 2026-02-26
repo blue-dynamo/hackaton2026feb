@@ -58,7 +58,7 @@ class StoryWriterIntegrationTest {
                         null,
                         0L
                 ),
-                new ArtifactResponse.SeverityAssessment("P2", "High-traffic core feature degraded", null, 0L),
+                new ArtifactResponse.SeverityAssessment("Critical", "High-traffic core feature degraded", null, 0L),
                 0L
         );
 
@@ -78,7 +78,7 @@ class StoryWriterIntegrationTest {
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.technicalAnalysis.content").value("Technical: DB connection timeout"))
-                .andExpect(jsonPath("$.severity.level").value("P2"))
+                .andExpect(jsonPath("$.severity.level").value("Critical"))
                 .andExpect(jsonPath("$.bugReport.title").value("DB timeout on order lookup"))
                 .andExpect(jsonPath("$.userStory.description").value("Customers experience slow or failing order retrieval due to a DB connection timeout."));
     }

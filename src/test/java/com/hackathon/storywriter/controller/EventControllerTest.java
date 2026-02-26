@@ -64,11 +64,11 @@ class EventControllerTest {
                         "Customers cannot complete payments due to an unhandled NullPointerException in the payment service.",
                         "Fix the NPE in PaymentService so that valid checkout requests return HTTP 200.",
                         "Given a valid checkout\nWhen the customer submits payment\nThen HTTP 200 is returned",
-                        "Component: PaymentService, checkout module. Priority: P1.",
+                        "Component: PaymentService, checkout module. Priority: Blocker.",
                         null,
                         0L
                 ),
-                new SeverityAssessment("P1", "Production payment flow is broken.", null, 0L),
+                new SeverityAssessment("Blocker", "Production payment flow is broken.", null, 0L),
                 0L
         );
 
@@ -78,7 +78,7 @@ class EventControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(event)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.severity.level").value("P1"))
+                .andExpect(jsonPath("$.severity.level").value("Blocker"))
                 .andExpect(jsonPath("$.bugReport.title").value("Payment processing fails with HTTP 500"))
                 .andExpect(jsonPath("$.userStory.description").value("Customers cannot complete payments due to an unhandled NullPointerException in the payment service."));
     }

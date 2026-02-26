@@ -13,8 +13,8 @@ import org.springframework.stereotype.Service;
 /**
  * Severity Agent.
  *
- * <p>Responsibility: assess the priority / severity of the failure (P1–P4)
- * based on the error, its root cause, and the affected component.
+ * <p>Responsibility: assess the priority / severity of the failure
+ * (Blocker, Critical, Major, Minor) based on the error, its root cause, and the affected component.
  */
 @Service
 public class SeverityAgent {
@@ -36,14 +36,14 @@ public class SeverityAgent {
     public SeverityAssessment assess(TestFailureEvent event, String technicalAnalysis, String rootCause) {
         String system = """
                 You are a senior engineering manager expert in triaging software defects.
-                Determine the priority severity of the reported failure using P1–P4 scale:
-                  P1 = Critical / production blocker
-                  P2 = High / major functionality broken
-                  P3 = Medium / feature partially impacted
-                  P4 = Low / minor issue or cosmetic
+                Determine the priority severity of the reported failure using this scale:
+                  Blocker  = production blocker, data loss, or security vulnerability
+                  Critical = major feature completely broken, no workaround available
+                  Major    = feature partially impacted, workaround exists
+                  Minor    = cosmetic or edge case with minimal business impact
                 You must respond with ONLY valid JSON matching this exact structure — no markdown, no explanation:
                 {
-                  "level": "<P1|P2|P3|P4>",
+                  "level": "<Blocker|Critical|Major|Minor>",
                   "rationale": "<2-3 sentence justification>",
                   "confidence": <float 0.0–1.0 — your confidence in this severity assessment>
                 }
@@ -82,7 +82,7 @@ public class SeverityAgent {
             return objectMapper.readValue(Strings.stripCodeFence(raw), SeverityAssessment.class);
         } catch (Exception e) {
             log.warn("Severity agent response is not valid JSON: {}", e.getMessage());
-            return new SeverityAssessment("P3", raw, null, 0L);
+            return new SeverityAssessment("Major", raw, null, 0L);
         }
     }
 }

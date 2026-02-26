@@ -20,7 +20,7 @@ public class StoryWriterAcceptanceTest {
      * Returns the severity level computed by the logic under test.
      */
     public String processSampleJunitFailure(String errorMessage) {
-        // Simulate what the orchestrator returns for a P2-class failure
+        // Simulate what the orchestrator returns for a Critical-class failure
         ArtifactResponse artifact = new ArtifactResponse(
                 new ArtifactResponse.TechnicalAnalysis("Technical: " + errorMessage, 0L),
                 new ArtifactResponse.RootCause("Root cause identified", 0L),
@@ -32,7 +32,7 @@ public class StoryWriterAcceptanceTest {
                         "Given a valid request\nWhen submitted\nThen it succeeds",
                         "Auto-generated story from test failure.",
                         null, 0L),
-                new ArtifactResponse.SeverityAssessment("P2", "Core feature impacted", null, 0L),
+                new ArtifactResponse.SeverityAssessment("Critical", "Core feature impacted", null, 0L),
                 0L
         );
         return artifact.severity().level();

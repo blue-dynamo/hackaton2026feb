@@ -32,7 +32,7 @@ These are the only agents you can call. Each has a specific role:
 - **Root Cause** — Deduces the root cause of a test failure using technical analysis
 - **Bug Writer** — Writes a structured, actionable bug report
 - **Story Writer** — Translates a test failure into a business-oriented user story
-- **Severity** — Triages and assigns a P1–P4 severity level
+- **Severity** — Triages and assigns a severity level (Blocker, Critical, Major, Minor)
 
 ## Execution Model
 
@@ -119,7 +119,7 @@ Phase 3:  BugWriter          (input: event + technicalAnalysis + rootCause)  ┐
     "durationMs": 0
   },
   "severity": {
-    "level": "P1|P2|P3|P4",
+    "level": "Blocker|Critical|Major|Minor",
     "rationale": "string",
     "confidence": 0.0,
     "durationMs": 0

@@ -59,7 +59,7 @@ class OrchestratorServiceTest {
                 "Given a valid order payload\nWhen the customer submits the order\nThen HTTP 200 is returned",
                 "Component: OrderService. Related: checkout module.",
                 null, 0L);
-        SeverityAssessment severity = new SeverityAssessment("P2", "Core order flow impacted", null, 0L);
+        SeverityAssessment severity = new SeverityAssessment("Critical", "Core order flow impacted", null, 0L);
 
         when(technicalAnalyzerAgent.analyze(SAMPLE_EVENT)).thenReturn(techAnalysis);
         when(rootCauseAgent.analyze(eq(SAMPLE_EVENT), eq(techAnalysis))).thenReturn(rootCause);

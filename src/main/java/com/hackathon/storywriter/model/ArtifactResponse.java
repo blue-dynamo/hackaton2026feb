@@ -78,7 +78,7 @@ public record ArtifactResponse(
      */
     @Schema(description = "Severity assessment")
     public record SeverityAssessment(
-            @Schema(description = "Severity level: P1 | P2 | P3 | P4", example = "P2") String level,
+            @Schema(description = "Severity level: Blocker | Critical | Major | Minor", example = "Critical") String level,
             @Schema(description = "Explanation for the chosen severity") String rationale,
             @Schema(description = "Model confidence (0.0\u20131.0)") Double confidence,
             @Schema(description = "Agent execution time (ms)") long durationMs
