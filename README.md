@@ -1,6 +1,6 @@
 # AI-Empowered Event-Based Story & Bug Writer
 
-> A Spring Boot 3 / Java 21 service that automatically generates bug reports, user stories, and severity assessments from test failures and application logs — powered by the GitHub Copilot CLI and a multi-agent pipeline.
+> A Spring Boot 3 / Java 25 service that automatically generates bug reports, user stories, and severity assessments from test failures and application logs — powered by the GitHub Copilot CLI and a multi-agent pipeline.
 
 ---
 
@@ -23,16 +23,11 @@
 
 | Tool | Purpose |
 |------|---------|
-| Java 21 | Runtime |
+| Java 25 | Runtime (class file target 24) |
 | Maven 3.9+ | Build tool |
 | `copilot` CLI | LLM backbone — must be installed and authenticated |
-| GitHub CLI (`gh`) | Used by `copilot` for authentication |
 
-Authenticate before starting the service:
-
-```bash
-gh auth login
-```
+The service shells out directly to the `copilot` binary (e.g. `copilot --model gpt-4.1 -s -p "..." --yolo`), so the `copilot` CLI must be installed and signed in **before** starting the service. `gh auth login` is **not** required unless your `copilot` installation uses the `gh` token as its auth source.
 
 ---
 
