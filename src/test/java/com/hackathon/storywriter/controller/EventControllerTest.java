@@ -61,10 +61,10 @@ class EventControllerTest {
                         0L
                 ),
                 new UserStory(
-                        "customer",
-                        "complete a payment without errors",
-                        "I can successfully purchase items",
-                        "Given a valid checkout\nWhen I submit payment\nThen I receive HTTP 200",
+                        "Customers cannot complete payments due to an unhandled NullPointerException in the payment service.",
+                        "Fix the NPE in PaymentService so that valid checkout requests return HTTP 200.",
+                        "Given a valid checkout\nWhen the customer submits payment\nThen HTTP 200 is returned",
+                        "Component: PaymentService, checkout module. Priority: P1.",
                         null,
                         0L
                 ),
@@ -80,7 +80,7 @@ class EventControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.severity.level").value("P1"))
                 .andExpect(jsonPath("$.bugReport.title").value("Payment processing fails with HTTP 500"))
-                .andExpect(jsonPath("$.userStory.asA").value("customer"));
+                .andExpect(jsonPath("$.userStory.description").value("Customers cannot complete payments due to an unhandled NullPointerException in the payment service."));
     }
 
     @Test

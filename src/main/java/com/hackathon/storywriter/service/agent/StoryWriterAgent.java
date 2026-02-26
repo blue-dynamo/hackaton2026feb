@@ -36,13 +36,13 @@ public class StoryWriterAgent {
     public UserStory write(TestFailureEvent event, String rootCause) {
         String system = """
                 You are a product owner and agile coach expert in writing user stories.
-                Translate a technical bug / failure into a clear user story following Connextra format.
+                Translate a technical bug / failure into a structured user story with four sections.
                 You must respond with ONLY valid JSON matching this exact structure — no markdown, no explanation:
                 {
-                  "asA": "<role affected by the bug>",
-                  "iWant": "<desired behaviour>",
-                  "soThat": "<business value>",
-                  "acceptanceCriteria": "<Gherkin Given/When/Then or bullet points>",
+                  "description": "<context and description of the problem: what it is, who is affected, and why it matters>",
+                  "whatToDo": "<clear action items describing what needs to be implemented or fixed>",
+                  "acceptanceCriteria": "<Gherkin Given/When/Then scenario(s) defining done>",
+                  "additionalInformation": "<any extra context, related components, links, or notes relevant to the story>",
                   "confidence": <float 0.0–1.0 — your confidence in the relevance of this user story>
                 }
                 """;
@@ -52,14 +52,17 @@ public class StoryWriterAgent {
 
                 **Error:** %s
                 **Source:** %s
-                **Test:** %s
+                **Test / Origin:** %s
                 **Context:** %s
 
                 **Root Cause:**
                 %s
 
                 Generate the user story JSON now. Be business-oriented, not technical.
-                The acceptance criteria should be in Gherkin Given/When/Then format.
+                - `description`: explain the context and impact in plain language.
+                - `whatToDo`: list concrete actions the team must take.
+                - `acceptanceCriteria`: use Gherkin Given/When/Then format.
+                - `additionalInformation`: include component names, related tickets, or mitigation hints.
                 """.formatted(
                 event.errorMessage(),
                 event.source(),
@@ -78,9 +81,9 @@ public class StoryWriterAgent {
         } catch (Exception e) {
             log.warn("StoryWriter agent response is not valid JSON, using raw text: {}", e.getMessage());
             return new UserStory(
-                    "developer",
                     "fix: " + event.errorMessage(),
-                    "the application behaves correctly",
+                    "Investigate and resolve the reported failure.",
+                    "Given the system is running\nWhen the scenario is triggered\nThen it completes without error",
                     raw,
                     null,
                     0L

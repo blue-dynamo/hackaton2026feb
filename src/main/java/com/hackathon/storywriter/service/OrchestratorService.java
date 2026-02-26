@@ -163,9 +163,9 @@ public class OrchestratorService {
 
             UserStory rawStory = storyFuture.get();
             UserStory userStory = new UserStory(
-                    rawStory.asA(), rawStory.iWant(), rawStory.soThat(),
-                    rawStory.acceptanceCriteria(), rawStory.confidence(),
-                    storyMs.get());
+                    rawStory.description(), rawStory.whatToDo(),
+                    rawStory.acceptanceCriteria(), rawStory.additionalInformation(),
+                    rawStory.confidence(), storyMs.get());
 
             SeverityAssessment rawSeverity = severityFuture.get();
             SeverityAssessment severity = new SeverityAssessment(

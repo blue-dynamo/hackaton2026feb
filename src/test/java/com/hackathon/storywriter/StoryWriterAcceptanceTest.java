@@ -26,8 +26,12 @@ public class StoryWriterAcceptanceTest {
                 new ArtifactResponse.RootCause("Root cause identified", 0L),
                 new ArtifactResponse.BugReport(
                         "Bug: " + errorMessage, "Description", "Steps", "Expected", "Actual", null, 0L),
-                new ArtifactResponse.UserStory("user", "fix " + errorMessage, "stability",
-                        "Given a valid request\nWhen submitted\nThen it succeeds", null, 0L),
+                new ArtifactResponse.UserStory(
+                        "Users are affected by: " + errorMessage,
+                        "Fix " + errorMessage + " to restore stability.",
+                        "Given a valid request\nWhen submitted\nThen it succeeds",
+                        "Auto-generated story from test failure.",
+                        null, 0L),
                 new ArtifactResponse.SeverityAssessment("P2", "Core feature impacted", null, 0L),
                 0L
         );

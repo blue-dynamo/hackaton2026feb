@@ -54,8 +54,11 @@ class OrchestratorServiceTest {
         BugReport bugReport = new BugReport(
                 "Order creation fails with 500", "NPE in service", "1. POST /orders", "200", "500", null, 0L);
         UserStory userStory = new UserStory(
-                "customer", "create an order", "I can buy items",
-                "Given valid order\nWhen submitted\nThen 200 returned", null, 0L);
+                "Order creation fails for customers due to an unhandled NPE in the service layer.",
+                "Fix null-pointer exception in OrderService.createOrder() by adding payload validation.",
+                "Given a valid order payload\nWhen the customer submits the order\nThen HTTP 200 is returned",
+                "Component: OrderService. Related: checkout module.",
+                null, 0L);
         SeverityAssessment severity = new SeverityAssessment("P2", "Core order flow impacted", null, 0L);
 
         when(technicalAnalyzerAgent.analyze(SAMPLE_EVENT)).thenReturn(techAnalysis);
@@ -71,7 +74,7 @@ class OrchestratorServiceTest {
         assertThat(result.technicalAnalysis().content()).isEqualTo(techAnalysis);
         assertThat(result.rootCause().content()).isEqualTo(rootCause);
         assertThat(result.bugReport().title()).isEqualTo(bugReport.title());
-        assertThat(result.userStory().asA()).isEqualTo(userStory.asA());
+        assertThat(result.userStory().description()).isEqualTo(userStory.description());
         assertThat(result.severity().level()).isEqualTo(severity.level());
         assertThat(result.totalMs()).isGreaterThanOrEqualTo(0L);
         assertThat(result.technicalAnalysis().durationMs()).isGreaterThanOrEqualTo(0L);

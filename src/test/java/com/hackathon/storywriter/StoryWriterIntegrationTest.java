@@ -51,10 +51,10 @@ class StoryWriterIntegrationTest {
                         0L
                 ),
                 new ArtifactResponse.UserStory(
-                        "customer",
-                        "retrieve my orders quickly",
-                        "I get a responsive shopping experience",
-                        "Given authenticated user\nWhen viewing orders\nThen response within 500ms",
+                        "Customers experience slow or failing order retrieval due to a DB connection timeout.",
+                        "Investigate and fix the connection timeout on GET /orders; add a circuit breaker or increase pool size.",
+                        "Given an authenticated user\nWhen they view their orders\nThen the response is returned within 500ms",
+                        "Component: OrderController, DB connection pool. Related: peak-load scenarios.",
                         null,
                         0L
                 ),
@@ -80,6 +80,6 @@ class StoryWriterIntegrationTest {
                 .andExpect(jsonPath("$.technicalAnalysis.content").value("Technical: DB connection timeout"))
                 .andExpect(jsonPath("$.severity.level").value("P2"))
                 .andExpect(jsonPath("$.bugReport.title").value("DB timeout on order lookup"))
-                .andExpect(jsonPath("$.userStory.asA").value("customer"));
+                .andExpect(jsonPath("$.userStory.description").value("Customers experience slow or failing order retrieval due to a DB connection timeout."));
     }
 }

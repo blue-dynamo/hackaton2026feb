@@ -60,14 +60,15 @@ public record ArtifactResponse(
     ) {}
 
     /**
-     * User story produced by the Story Writer Agent following Connextra format.
+     * User story produced by the Story Writer Agent.
+     * Structured in four sections: description, whatToDo, acceptanceCriteria, additionalInformation.
      */
-    @Schema(description = "User story in Connextra format")
+    @Schema(description = "User story with four structured sections")
     public record UserStory(
-            @Schema(description = "Role affected by the bug") String asA,
-            @Schema(description = "Feature / behaviour desired") String iWant,
-            @Schema(description = "Business value") String soThat,
+            @Schema(description = "Context and description of the problem / feature") String description,
+            @Schema(description = "What needs to be done to address the issue") String whatToDo,
             @Schema(description = "Gherkin-style acceptance criteria") String acceptanceCriteria,
+            @Schema(description = "Additional information, links, or notes") String additionalInformation,
             @Schema(description = "Model confidence (0.0\u20131.0)") Double confidence,
             @Schema(description = "Agent execution time (ms)") long durationMs
     ) {}

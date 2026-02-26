@@ -111,10 +111,10 @@ Phase 3:  BugWriter          (input: event + technicalAnalysis + rootCause)  ┐
     "durationMs": 0
   },
   "userStory": {
-    "asA": "string",
-    "iWant": "string",
-    "soThat": "string",
+    "description": "string",
+    "whatToDo": "string",
     "acceptanceCriteria": "string",
+    "additionalInformation": "string",
     "confidence": 0.0,
     "durationMs": 0
   },
