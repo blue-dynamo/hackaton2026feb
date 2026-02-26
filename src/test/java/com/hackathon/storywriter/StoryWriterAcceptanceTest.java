@@ -25,10 +25,11 @@ public class StoryWriterAcceptanceTest {
                 "Technical: " + errorMessage,
                 "Root cause identified",
                 new ArtifactResponse.BugReport(
-                        "Bug: " + errorMessage, "Description", "Steps", "Expected", "Actual"),
+                        "Bug: " + errorMessage, "Description", "Steps", "Expected", "Actual", null),
                 new ArtifactResponse.UserStory("user", "fix " + errorMessage, "stability",
-                        "Given a valid request\nWhen submitted\nThen it succeeds"),
-                new ArtifactResponse.SeverityAssessment("P2", "Core feature impacted")
+                        "Given a valid request\nWhen submitted\nThen it succeeds", null),
+                new ArtifactResponse.SeverityAssessment("P2", "Core feature impacted", null),
+                new ArtifactResponse.PipelineMetrics(0L, 0L, 0L, 0L, 0L, 0L)
         );
         return artifact.severity().level();
     }

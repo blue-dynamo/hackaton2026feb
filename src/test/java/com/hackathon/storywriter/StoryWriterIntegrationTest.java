@@ -46,15 +46,18 @@ class StoryWriterIntegrationTest {
                         "Connection pool exhausted",
                         "1. Load test with 100 concurrent users",
                         "Orders returned within 200ms",
-                        "Timeout after 30s"
+                        "Timeout after 30s",
+                        null
                 ),
                 new ArtifactResponse.UserStory(
                         "customer",
                         "retrieve my orders quickly",
                         "I get a responsive shopping experience",
-                        "Given authenticated user\nWhen viewing orders\nThen response within 500ms"
+                        "Given authenticated user\nWhen viewing orders\nThen response within 500ms",
+                        null
                 ),
-                new ArtifactResponse.SeverityAssessment("P2", "High-traffic core feature degraded")
+                new ArtifactResponse.SeverityAssessment("P2", "High-traffic core feature degraded", null),
+                new ArtifactResponse.PipelineMetrics(0L, 0L, 0L, 0L, 0L, 0L)
         );
 
         when(orchestratorService.process(any(TestFailureEvent.class))).thenReturn(mockArtifact);

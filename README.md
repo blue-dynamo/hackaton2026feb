@@ -59,6 +59,7 @@ Phase 3: BugWriter + StoryWriter + Severity  →  merged ArtifactResponse JSON
 			 "context": "Payment service, checkout module"
 		 }'
 	 ```
+	 Or open `requests.http` in VS Code with the [REST Client](https://marketplace.visualstudio.com/items?itemName=humao.rest-client) extension and click **Send Request** on any example.
 
 ## Additional Information
 

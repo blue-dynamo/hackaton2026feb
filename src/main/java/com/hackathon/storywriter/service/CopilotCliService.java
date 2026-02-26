@@ -10,10 +10,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.BufferedReader;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -44,7 +44,11 @@ public class CopilotCliService {
     @Value("${copilot.cli.timeout-seconds:60}")
     private int timeoutSeconds;
 
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    private final ObjectMapper objectMapper;
+
+    public CopilotCliService(ObjectMapper objectMapper) {
+        this.objectMapper = objectMapper;
+    }
 
     /**
      * Sends {@code prompt} to GitHub Copilot (via CLI) and returns the raw text response.
@@ -162,7 +166,7 @@ public class CopilotCliService {
     // Helpers
     // -------------------------------------------------------------------------
 
-    private String readStream(java.io.InputStream is) throws Exception {
+    private String readStream(InputStream is) throws Exception {
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8))) {
             return reader.lines().collect(Collectors.joining("\n"));
         }

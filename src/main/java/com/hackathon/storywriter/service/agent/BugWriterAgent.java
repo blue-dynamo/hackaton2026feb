@@ -3,6 +3,7 @@ package com.hackathon.storywriter.service.agent;
 import com.hackathon.storywriter.model.ArtifactResponse.BugReport;
 import com.hackathon.storywriter.model.TestFailureEvent;
 import com.hackathon.storywriter.service.CopilotCliService;
+import com.hackathon.storywriter.util.Strings;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,7 +36,8 @@ public class BugWriterAgent {
                   "description": "<detailed description>",
                   "stepsToReproduce": "<numbered steps or test name>",
                   "expectedBehavior": "<what should happen>",
-                  "actualBehavior": "<what actually happened>"
+                  "actualBehavior": "<what actually happened>",
+                  "confidence": <float 0.0–1.0 — your confidence in the accuracy of this bug report>
                 }
                 """;
 
@@ -57,8 +59,8 @@ public class BugWriterAgent {
                 """.formatted(
                 event.errorMessage(),
                 event.source(),
-                nvl(event.testName()),
-                nvl(event.context()),
+                Strings.nvl(event.testName()),
+                Strings.nvl(event.context()),
                 technicalAnalysis,
                 rootCause
         );
@@ -69,25 +71,17 @@ public class BugWriterAgent {
 
     private BugReport parseOrFallback(String raw, TestFailureEvent event) {
         try {
-            // Strip markdown code fences if present
-            String json = raw.trim();
-            if (json.startsWith("```")) {
-                json = json.replaceAll("^```[a-z]*\\n?", "").replaceAll("```$", "").trim();
-            }
-            return objectMapper.readValue(json, BugReport.class);
+            return objectMapper.readValue(Strings.stripCodeFence(raw), BugReport.class);
         } catch (Exception e) {
             log.warn("BugWriter agent response is not valid JSON, using raw text as description: {}", e.getMessage());
             return new BugReport(
                     "Bug: " + event.errorMessage(),
                     raw,
-                    nvl(event.testName()),
+                    Strings.nvl(event.testName()),
                     "(not parsed)",
-                    event.errorMessage()
+                    event.errorMessage(),
+                    null
             );
         }
-    }
-
-    private String nvl(String s) {
-        return s == null ? "(not provided)" : s;
     }
 }

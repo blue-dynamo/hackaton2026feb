@@ -2,6 +2,9 @@ package com.hackathon.storywriter.service.agent;
 
 import com.hackathon.storywriter.model.TestFailureEvent;
 import com.hackathon.storywriter.service.CopilotCliService;
+import com.hackathon.storywriter.util.Strings;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -15,17 +18,21 @@ import org.springframework.stereotype.Service;
 @Service
 public class TechnicalAnalyzerAgent {
 
+    private static final Logger log = LoggerFactory.getLogger(TechnicalAnalyzerAgent.class);
+
     private final CopilotCliService copilot;
+    private final int maxStacktraceChars;
 
-    @Value("${copilot.cli.max-stacktrace-chars:3000}")
-    private int maxStacktraceChars;
-
-    public TechnicalAnalyzerAgent(CopilotCliService copilot) {
+    public TechnicalAnalyzerAgent(
+            CopilotCliService copilot,
+            @Value("${copilot.cli.max-stacktrace-chars:3000}") int maxStacktraceChars) {
         this.copilot = copilot;
+        this.maxStacktraceChars = maxStacktraceChars;
     }
 
     public String analyze(TestFailureEvent event) {
-        String stackTrace = truncate(event.stackTrace());
+        log.debug("Analyzing failure: source={}, test={}", event.source(), event.testName());
+        String stackTrace = Strings.truncate(event.stackTrace(), maxStacktraceChars);
 
         String system = """
                 You are a senior Java engineer specializing in diagnosing test failures.
@@ -55,21 +62,14 @@ public class TechnicalAnalyzerAgent {
                 4. Whether this is likely a unit-level or integration-level issue
                 """.formatted(
                 event.source(),
-                nvl(event.testName()),
+                Strings.nvl(event.testName()),
                 event.errorMessage(),
-                nvl(stackTrace),
-                nvl(event.context())
+                Strings.nvl(stackTrace),
+                Strings.nvl(event.context())
         );
 
         return copilot.ask("TechnicalAnalyzer", system, user);
     }
 
-    private String truncate(String s) {
-        if (s == null) return "";
-        return s.length() > maxStacktraceChars ? s.substring(0, maxStacktraceChars) + "\n... [truncated]" : s;
-    }
 
-    private String nvl(String s) {
-        return s == null ? "(not provided)" : s;
-    }
 }

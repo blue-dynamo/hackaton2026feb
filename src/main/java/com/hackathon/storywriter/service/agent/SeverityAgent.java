@@ -3,6 +3,7 @@ package com.hackathon.storywriter.service.agent;
 import com.hackathon.storywriter.model.ArtifactResponse.SeverityAssessment;
 import com.hackathon.storywriter.model.TestFailureEvent;
 import com.hackathon.storywriter.service.CopilotCliService;
+import com.hackathon.storywriter.util.Strings;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,7 +38,8 @@ public class SeverityAgent {
                 You must respond with ONLY valid JSON matching this exact structure — no markdown, no explanation:
                 {
                   "level": "<P1|P2|P3|P4>",
-                  "rationale": "<2-3 sentence justification>"
+                  "rationale": "<2-3 sentence justification>",
+                  "confidence": <float 0.0–1.0 — your confidence in this severity assessment>
                 }
                 """;
 
@@ -59,8 +61,8 @@ public class SeverityAgent {
                 """.formatted(
                 event.errorMessage(),
                 event.source(),
-                nvl(event.testName()),
-                nvl(event.context()),
+                Strings.nvl(event.testName()),
+                Strings.nvl(event.context()),
                 technicalAnalysis,
                 rootCause
         );
@@ -71,18 +73,10 @@ public class SeverityAgent {
 
     private SeverityAssessment parseOrFallback(String raw) {
         try {
-            String json = raw.trim();
-            if (json.startsWith("```")) {
-                json = json.replaceAll("^```[a-z]*\\n?", "").replaceAll("```$", "").trim();
-            }
-            return objectMapper.readValue(json, SeverityAssessment.class);
+            return objectMapper.readValue(Strings.stripCodeFence(raw), SeverityAssessment.class);
         } catch (Exception e) {
             log.warn("Severity agent response is not valid JSON: {}", e.getMessage());
-            return new SeverityAssessment("P3", raw);
+            return new SeverityAssessment("P3", raw, null);
         }
-    }
-
-    private String nvl(String s) {
-        return s == null ? "(not provided)" : s;
     }
 }

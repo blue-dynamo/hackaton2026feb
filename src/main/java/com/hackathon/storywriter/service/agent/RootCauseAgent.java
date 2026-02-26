@@ -2,6 +2,9 @@ package com.hackathon.storywriter.service.agent;
 
 import com.hackathon.storywriter.model.TestFailureEvent;
 import com.hackathon.storywriter.service.CopilotCliService;
+import com.hackathon.storywriter.util.Strings;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 /**
@@ -14,6 +17,8 @@ import org.springframework.stereotype.Service;
 @Service
 public class RootCauseAgent {
 
+    private static final Logger log = LoggerFactory.getLogger(RootCauseAgent.class);
+
     private final CopilotCliService copilot;
 
     public RootCauseAgent(CopilotCliService copilot) {
@@ -21,6 +26,7 @@ public class RootCauseAgent {
     }
 
     public String analyze(TestFailureEvent event, String technicalAnalysis) {
+        log.debug("Analyzing root cause for: {}", event.errorMessage());
         String system = """
                 You are a root-cause analysis expert with deep knowledge of Java, Spring Boot,
                 JUnit, MockMvc, and Concordion testing frameworks.
@@ -47,15 +53,13 @@ public class RootCauseAgent {
                 """.formatted(
                 event.errorMessage(),
                 event.source(),
-                nvl(event.testName()),
-                nvl(event.context()),
+                Strings.nvl(event.testName()),
+                Strings.nvl(event.context()),
                 technicalAnalysis
         );
 
         return copilot.ask("RootCause", system, user);
     }
 
-    private String nvl(String s) {
-        return s == null ? "(not provided)" : s;
-    }
+
 }

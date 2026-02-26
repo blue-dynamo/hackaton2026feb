@@ -1,0 +1,78 @@
+### Base URL
+@baseUrl = http://localhost:8080
+
+###
+# Health check
+GET {{baseUrl}}/api/health
+
+###
+# JUnit test failure — payment service NPE
+POST {{baseUrl}}/api/events
+Content-Type: application/json
+
+{
+  "source": "JUNIT",
+  "testName": "com.example.PaymentServiceTest#shouldProcessPayment",
+  "errorMessage": "Expected status 200 but was 500",
+  "stackTrace": "java.lang.AssertionError: Expected status <200> but was <500>\n\tat org.springframework.test.web.servlet.result.StatusResultMatchers.lambda$matcher$9(StatusResultMatchers.java:627)\n\tat com.example.PaymentServiceTest.shouldProcessPayment(PaymentServiceTest.java:42)",
+  "context": "Payment service, checkout module"
+}
+
+###
+# MockMvc test failure — order controller timeout
+POST {{baseUrl}}/api/events
+Content-Type: application/json
+
+{
+  "source": "MOCK_MVC",
+  "testName": "com.example.OrderControllerIT#shouldReturnOrders",
+  "errorMessage": "Connection timed out after 30000ms",
+  "stackTrace": "java.net.SocketTimeoutException: Connect timed out\n\tat sun.net.www.protocol.http.HttpClient.parseHTTPHeader(HttpClient.java:790)\n\tat com.example.OrderControllerIT.shouldReturnOrders(OrderControllerIT.java:88)",
+  "context": "Order Controller — GET /orders"
+}
+
+###
+# Concordion BDD test failure — user registration
+POST {{baseUrl}}/api/events
+Content-Type: application/json
+
+{
+  "source": "CONCORDION",
+  "testName": "com.example.UserRegistrationSpec",
+  "errorMessage": "AssertionError: expected 'ACTIVE' but was 'PENDING'",
+  "stackTrace": "org.concordion.api.ResultSummary$AssertionError: AssertionError: expected 'ACTIVE' but was 'PENDING'\n\tat com.example.UserRegistrationSpec.verifyStatus(UserRegistrationSpec.java:55)",
+  "context": "User registration acceptance spec — account activation"
+}
+
+###
+# Application log failure — null pointer in inventory service
+POST {{baseUrl}}/api/events
+Content-Type: application/json
+
+{
+  "source": "LOG",
+  "testName": null,
+  "errorMessage": "NullPointerException: Cannot invoke method getStock() on null object",
+  "stackTrace": "java.lang.NullPointerException: Cannot invoke method getStock() on null object\n\tat com.example.InventoryService.checkAvailability(InventoryService.java:113)\n\tat com.example.OrderService.createOrder(OrderService.java:67)",
+  "context": "Inventory service — stock availability check triggered during peak load"
+}
+
+###
+# Validation error — missing required field (expects 400)
+POST {{baseUrl}}/api/events
+Content-Type: application/json
+
+{
+  "source": "JUNIT",
+  "testName": "com.example.SomeTest#someMethod"
+}
+
+###
+# Validation error — missing source (expects 400)
+POST {{baseUrl}}/api/events
+Content-Type: application/json
+
+{
+  "testName": "com.example.SomeTest#someMethod",
+  "errorMessage": "Something went wrong"
+}

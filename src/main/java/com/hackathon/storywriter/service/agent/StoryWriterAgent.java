@@ -3,6 +3,7 @@ package com.hackathon.storywriter.service.agent;
 import com.hackathon.storywriter.model.ArtifactResponse.UserStory;
 import com.hackathon.storywriter.model.TestFailureEvent;
 import com.hackathon.storywriter.service.CopilotCliService;
+import com.hackathon.storywriter.util.Strings;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,7 +36,8 @@ public class StoryWriterAgent {
                   "asA": "<role affected by the bug>",
                   "iWant": "<desired behaviour>",
                   "soThat": "<business value>",
-                  "acceptanceCriteria": "<Gherkin Given/When/Then or bullet points>"
+                  "acceptanceCriteria": "<Gherkin Given/When/Then or bullet points>",
+                  "confidence": <float 0.0–1.0 — your confidence in the relevance of this user story>
                 }
                 """;
 
@@ -55,8 +57,8 @@ public class StoryWriterAgent {
                 """.formatted(
                 event.errorMessage(),
                 event.source(),
-                nvl(event.testName()),
-                nvl(event.context()),
+                Strings.nvl(event.testName()),
+                Strings.nvl(event.context()),
                 rootCause
         );
 
@@ -66,23 +68,16 @@ public class StoryWriterAgent {
 
     private UserStory parseOrFallback(String raw, TestFailureEvent event) {
         try {
-            String json = raw.trim();
-            if (json.startsWith("```")) {
-                json = json.replaceAll("^```[a-z]*\\n?", "").replaceAll("```$", "").trim();
-            }
-            return objectMapper.readValue(json, UserStory.class);
+            return objectMapper.readValue(Strings.stripCodeFence(raw), UserStory.class);
         } catch (Exception e) {
             log.warn("StoryWriter agent response is not valid JSON, using raw text: {}", e.getMessage());
             return new UserStory(
                     "developer",
                     "fix: " + event.errorMessage(),
                     "the application behaves correctly",
-                    raw
+                    raw,
+                    null
             );
         }
-    }
-
-    private String nvl(String s) {
-        return s == null ? "(not provided)" : s;
     }
 }

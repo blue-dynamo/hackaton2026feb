@@ -10,7 +10,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import jakarta.annotation.PreDestroy;
 import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * Deterministic, non-LLM orchestrator that drives the multi-agent pipeline.
@@ -42,11 +44,15 @@ public class OrchestratorService {
     private final SeverityAgent severityAgent;
 
     /**
-     * Dedicated thread pool: one thread per agent branch to avoid blocking
-     * the common ForkJoinPool used by the rest of the application.
+     * Virtual-thread executor: each agent task runs on its own lightweight
+     * virtual thread (Java 21+), eliminating fixed-pool sizing concerns.
      */
-    private final ExecutorService executor = Executors.newFixedThreadPool(5,
-            Thread.ofVirtual().name("agent-", 0).factory());
+    private final ExecutorService executor = Executors.newVirtualThreadPerTaskExecutor();
+
+    @PreDestroy
+    public void shutdownExecutor() {
+        executor.shutdown();
+    }
 
     public OrchestratorService(
             TechnicalAnalyzerAgent technicalAnalyzerAgent,
@@ -72,21 +78,32 @@ public class OrchestratorService {
         log.info("Orchestrator starting pipeline for event: source={}, test={}",
                 event.source(), event.testName());
 
+        long pipelineStart = System.currentTimeMillis();
+        AtomicLong techMs     = new AtomicLong();
+        AtomicLong rootMs     = new AtomicLong();
+        AtomicLong bugMs      = new AtomicLong();
+        AtomicLong storyMs    = new AtomicLong();
+        AtomicLong severityMs = new AtomicLong();
+
         // ── Phase 1: Technical Analyzer (no dependencies) ─────────────────────
         CompletableFuture<String> techFuture = CompletableFuture.supplyAsync(
                 () -> {
+                    long start = System.currentTimeMillis();
                     log.debug("TechnicalAnalyzer starting");
                     String result = technicalAnalyzerAgent.analyze(event);
-                    log.debug("TechnicalAnalyzer completed");
+                    techMs.set(System.currentTimeMillis() - start);
+                    log.debug("TechnicalAnalyzer completed in {}ms", techMs.get());
                     return result;
                 }, executor);
 
         // ── Phase 2: Root Cause (depends on technical analysis) ───────────────
         CompletableFuture<String> rootFuture = techFuture.thenApplyAsync(
                 tech -> {
+                    long start = System.currentTimeMillis();
                     log.debug("RootCause starting");
                     String result = rootCauseAgent.analyze(event, tech);
-                    log.debug("RootCause completed");
+                    rootMs.set(System.currentTimeMillis() - start);
+                    log.debug("RootCause completed in {}ms", rootMs.get());
                     return result;
                 }, executor);
 
@@ -94,18 +111,22 @@ public class OrchestratorService {
         CompletableFuture<BugReport> bugFuture = techFuture.thenCombineAsync(
                 rootFuture,
                 (tech, root) -> {
+                    long start = System.currentTimeMillis();
                     log.debug("BugWriter starting");
                     BugReport result = bugWriterAgent.write(event, tech, root);
-                    log.debug("BugWriter completed");
+                    bugMs.set(System.currentTimeMillis() - start);
+                    log.debug("BugWriter completed in {}ms", bugMs.get());
                     return result;
                 }, executor);
 
         // ── Phase 3b: Story Writer (depends on root cause) ────────────────────
         CompletableFuture<UserStory> storyFuture = rootFuture.thenApplyAsync(
                 root -> {
+                    long start = System.currentTimeMillis();
                     log.debug("StoryWriter starting");
                     UserStory result = storyWriterAgent.write(event, root);
-                    log.debug("StoryWriter completed");
+                    storyMs.set(System.currentTimeMillis() - start);
+                    log.debug("StoryWriter completed in {}ms", storyMs.get());
                     return result;
                 }, executor);
 
@@ -113,9 +134,11 @@ public class OrchestratorService {
         CompletableFuture<SeverityAssessment> severityFuture = techFuture.thenCombineAsync(
                 rootFuture,
                 (tech, root) -> {
+                    long start = System.currentTimeMillis();
                     log.debug("Severity starting");
                     SeverityAssessment result = severityAgent.assess(event, tech, root);
-                    log.debug("Severity completed");
+                    severityMs.set(System.currentTimeMillis() - start);
+                    log.debug("Severity completed in {}ms", severityMs.get());
                     return result;
                 }, executor);
 
@@ -123,15 +146,22 @@ public class OrchestratorService {
         try {
             CompletableFuture.allOf(bugFuture, storyFuture, severityFuture).join();
 
+            long totalMs = System.currentTimeMillis() - pipelineStart;
+            ArtifactResponse.PipelineMetrics metrics = new ArtifactResponse.PipelineMetrics(
+                    techMs.get(), rootMs.get(), bugMs.get(), storyMs.get(), severityMs.get(), totalMs);
+
             ArtifactResponse artifact = new ArtifactResponse(
                     techFuture.get(),
                     rootFuture.get(),
                     bugFuture.get(),
                     storyFuture.get(),
-                    severityFuture.get()
+                    severityFuture.get(),
+                    metrics
             );
 
-            log.info("Orchestrator pipeline completed. Severity={}",
+            log.info("Orchestrator pipeline completed in {}ms "
+                             + "(tech={}ms root={}ms bug={}ms story={}ms severity={}ms). Severity={}",
+                    totalMs, techMs.get(), rootMs.get(), bugMs.get(), storyMs.get(), severityMs.get(),
                     artifact.severity() != null ? artifact.severity().level() : "N/A");
 
             return artifact;

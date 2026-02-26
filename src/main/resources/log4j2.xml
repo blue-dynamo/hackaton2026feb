@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN" monitorInterval="30">
+
+    <Properties>
+        <Property name="LOG_PATTERN">%d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n</Property>
+        <Property name="LOG_DIR">logs</Property>
+    </Properties>
+
+    <Appenders>
+
+        <!-- Console appender — coloured output for development -->
+        <Console name="ConsoleAppender" target="SYSTEM_OUT">
+            <PatternLayout pattern="${LOG_PATTERN}"/>
+        </Console>
+
+        <!-- Rolling file appender — daily roll + size cap -->
+        <RollingFile name="FileAppender"
+                     fileName="${LOG_DIR}/story-writer.log"
+                     filePattern="${LOG_DIR}/story-writer-%d{yyyy-MM-dd}-%i.log.gz">
+            <PatternLayout pattern="${LOG_PATTERN}"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+                <SizeBasedTriggeringPolicy size="20MB"/>
+            </Policies>
+            <DefaultRolloverStrategy max="30"/>
+        </RollingFile>
+
+    </Appenders>
+
+    <Loggers>
+
+        <!-- Application loggers — DEBUG in development -->
+        <Logger name="com.hackathon.storywriter" level="DEBUG" additivity="false">
+            <AppenderRef ref="ConsoleAppender"/>
+            <AppenderRef ref="FileAppender"/>
+        </Logger>
+
+        <!-- Spring framework — INFO only to reduce noise -->
+        <Logger name="org.springframework" level="INFO" additivity="false">
+            <AppenderRef ref="ConsoleAppender"/>
+            <AppenderRef ref="FileAppender"/>
+        </Logger>
+
+        <!-- Root logger -->
+        <Root level="INFO">
+            <AppenderRef ref="ConsoleAppender"/>
+            <AppenderRef ref="FileAppender"/>
+        </Root>
+
+    </Loggers>
+
+</Configuration>

@@ -52,11 +52,11 @@ class OrchestratorServiceTest {
         String techAnalysis = "NullPointerException in OrderService.createOrder()";
         String rootCause = "Missing validation on order payload";
         BugReport bugReport = new BugReport(
-                "Order creation fails with 500", "NPE in service", "1. POST /orders", "200", "500");
+                "Order creation fails with 500", "NPE in service", "1. POST /orders", "200", "500", null);
         UserStory userStory = new UserStory(
                 "customer", "create an order", "I can buy items",
-                "Given valid order\nWhen submitted\nThen 200 returned");
-        SeverityAssessment severity = new SeverityAssessment("P2", "Core order flow impacted");
+                "Given valid order\nWhen submitted\nThen 200 returned", null);
+        SeverityAssessment severity = new SeverityAssessment("P2", "Core order flow impacted", null);
 
         when(technicalAnalyzerAgent.analyze(SAMPLE_EVENT)).thenReturn(techAnalysis);
         when(rootCauseAgent.analyze(eq(SAMPLE_EVENT), eq(techAnalysis))).thenReturn(rootCause);
@@ -73,6 +73,10 @@ class OrchestratorServiceTest {
         assertThat(result.bugReport()).isEqualTo(bugReport);
         assertThat(result.userStory()).isEqualTo(userStory);
         assertThat(result.severity()).isEqualTo(severity);
+        assertThat(result.metrics()).isNotNull();
+        assertThat(result.metrics().totalMs()).isGreaterThanOrEqualTo(0L);
+        assertThat(result.metrics().technicalAnalyzerMs()).isGreaterThanOrEqualTo(0L);
+        assertThat(result.metrics().rootCauseMs()).isGreaterThanOrEqualTo(0L);
 
         verify(technicalAnalyzerAgent).analyze(SAMPLE_EVENT);
         verify(rootCauseAgent).analyze(eq(SAMPLE_EVENT), eq(techAnalysis));

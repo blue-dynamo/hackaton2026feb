@@ -57,15 +57,18 @@ class EventControllerTest {
                         "PaymentService throws NPE when payment is null",
                         "1. Call POST /payments with empty body",
                         "HTTP 200 with processed payment",
-                        "HTTP 500 with NullPointerException"
+                        "HTTP 500 with NullPointerException",
+                        null
                 ),
                 new UserStory(
                         "customer",
                         "complete a payment without errors",
                         "I can successfully purchase items",
-                        "Given a valid checkout\nWhen I submit payment\nThen I receive HTTP 200"
+                        "Given a valid checkout\nWhen I submit payment\nThen I receive HTTP 200",
+                        null
                 ),
-                new SeverityAssessment("P1", "Production payment flow is broken.")
+                new SeverityAssessment("P1", "Production payment flow is broken.", null),
+                new ArtifactResponse.PipelineMetrics(0L, 0L, 0L, 0L, 0L, 0L)
         );
 
         when(orchestratorService.process(any(TestFailureEvent.class))).thenReturn(mockArtifact);

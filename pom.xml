@@ -18,14 +18,27 @@
     <description>AI-empowered writing of event-based user stories and bugs</description>
 
     <properties>
-        <java.version>21</java.version>
+        <!-- Runtime: JDK 25; class file target: 24 (Spring Boot 3.4.x ASM supports up to version 68) -->
+        <java.version>25</java.version>
     </properties>
 
     <dependencies>
-        <!-- Web -->
+        <!-- Web (exclude default Logback in favour of Log4j2) -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-logging</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <!-- Log4j2 via SLF4J -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-log4j2</artifactId>
         </dependency>
 
         <!-- Validation -->
@@ -38,13 +51,6 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-actuator</artifactId>
-        </dependency>
-
-        <!-- Lombok -->
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <optional>true</optional>
         </dependency>
 
         <!-- Test -->
@@ -89,13 +95,14 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+            <!-- Compile to class version 24 – max supported by Spring Boot 3.4.x internal ASM.
+                 The project runs on JDK 25 and may use all language features up to Java 24. -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
-                    <excludes>
-                        <exclude>
-                            <groupId>org.projectlombok</groupId>
-                            <artifactId>lombok</artifactId>
-                        </exclude>
-                    </excludes>
+                    <release>24</release>
                 </configuration>
             </plugin>
             <plugin>
