@@ -41,7 +41,8 @@ Produce a complete bug report with:
   "description": "<detailed>",
   "stepsToReproduce": "<numbered steps>",
   "expectedBehavior": "<what should happen>",
-  "actualBehavior": "<what actually happened>"
+  "actualBehavior": "<what actually happened>",
+  "confidence": 0.95
 }
 ```
 

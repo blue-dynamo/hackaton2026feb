@@ -45,7 +45,8 @@ And <additional outcome>
   "asA": "<role affected by the bug>",
   "iWant": "<feature / behaviour desired>",
   "soThat": "<business value>",
-  "acceptanceCriteria": "Given ...\nWhen ...\nThen ..."
+  "acceptanceCriteria": "Given ...\nWhen ...\nThen ...",
+  "confidence": 0.95
 }
 ```
 

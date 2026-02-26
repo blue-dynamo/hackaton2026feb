@@ -40,7 +40,8 @@ You receive:
 ```json
 {
   "level": "P1|P2|P3|P4",
-  "rationale": "<2-3 sentence justification referencing the specific failure>"
+  "rationale": "<2-3 sentence justification referencing the specific failure>",
+  "confidence": 0.95
 }
 ```
 

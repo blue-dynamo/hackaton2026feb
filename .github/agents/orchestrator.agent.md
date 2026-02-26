@@ -45,24 +45,37 @@ Phase 3:  BugWriter          (input: event + technicalAnalysis + rootCause)  ┐
 
 ```json
 {
-  "technicalAnalysis": "string",
-  "rootCause": "string",
+  "technicalAnalysis": {
+    "content": "string",
+    "durationMs": 0
+  },
+  "rootCause": {
+    "content": "string",
+    "durationMs": 0
+  },
   "bugReport": {
     "title": "string",
     "description": "string",
     "stepsToReproduce": "string",
     "expectedBehavior": "string",
-    "actualBehavior": "string"
+    "actualBehavior": "string",
+    "confidence": 0.0,
+    "durationMs": 0
   },
   "userStory": {
     "asA": "string",
     "iWant": "string",
     "soThat": "string",
-    "acceptanceCriteria": "string"
+    "acceptanceCriteria": "string",
+    "confidence": 0.0,
+    "durationMs": 0
   },
   "severity": {
     "level": "P1|P2|P3|P4",
-    "rationale": "string"
-  }
+    "rationale": "string",
+    "confidence": 0.0,
+    "durationMs": 0
+  },
+  "totalMs": 0
 }
 ```

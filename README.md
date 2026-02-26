@@ -76,7 +76,7 @@ Once the service is running, the interactive Swagger UI and the raw OpenAPI spec
 - **Prerequisite:** `copilot` must be installed and authenticated before starting the service
 - **Change model:** Edit `copilot.cli.model` in `src/main/resources/application.yml`
 - **Test frameworks supported:** JUnit, Spring Boot Test/MockMvc, Concordion
-- **All LLM calls** are routed through `CopilotCliService` (`gh copilot explain`)
+- **All LLM calls** are routed through `CopilotCliService` (`copilot --model <model> -s -p "<prompt>" --yolo`)
 - **No LLM in orchestrator:** OrchestratorService is deterministic, only routes/merges agent outputs
 - **Tests:** Run `mvn test` (unit, integration, Concordion BDD)
 - **Agent files:** See `.github/agents/*.agent.md` for Copilot agent definitions and handoff workflows
