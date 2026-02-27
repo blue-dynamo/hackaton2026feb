@@ -2,7 +2,7 @@
 
 ## Project Summary
 
-**story-writer** is a Spring Boot 3 / Java 21 service that uses the `copilot` CLI
+**story-writer** is a Spring Boot 3 / Java 25 service that uses the `copilot` CLI
 (`copilot --model gpt-4.1 -s -p "<prompt>" --yolo`) to automatically generate bug reports and user stories
 from test failures (JUnit, MockMvc, Concordion) and application logs.
 
@@ -13,12 +13,12 @@ POST /api/events  (TestFailureEvent JSON)
         │
 OrchestratorService  (deterministic, non-LLM, Spring @Service)
         │
-        ├── Phase 1:  TechnicalAnalyzerAgent  ──────────────────────────────────────┐
-        │                                                                            │
-        ├── Phase 2:  RootCauseAgent  (depends on Phase 1 output) ─────────────────┤
-        │                                                                            │
-        └── Phase 3 (parallel):                                                     │
-             BugWriterAgent     (needs tech + root)    ◄──────────────────────────┘
+        ├── Phase 1:  TechnicalAnalyzerAgent  ────────────────────────┐
+        │                                                             │
+        ├── Phase 2:  RootCauseAgent  (depends on Phase 1 output) ────┤
+        │                                                             │
+        └── Phase 3 (parallel):                                       │
+             BugWriterAgent     (needs tech + root)    ◄──────────────┘
              StoryWriterAgent   (needs root)
              SeverityAgent      (needs tech + root)
         │

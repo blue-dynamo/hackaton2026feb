@@ -1,7 +1,7 @@
 ---
 description: 'Parses raw test failures and produces a structured technical summary of what failed and where'
 name: 'Technical Analyzer'
-tools: ['read', 'search']
+tools: ['agent', 'read', 'search']
 model: 'gpt-4.1'
 target: 'vscode'
 handoffs:

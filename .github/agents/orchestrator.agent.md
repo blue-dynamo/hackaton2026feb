@@ -1,7 +1,7 @@
 ---
 description: 'Deterministic orchestrator: routes failure events to analysis sub-agents and merges their JSON outputs'
 name: 'Orchestrator'
-tools: ['read', 'search']
+tools: ['agent', 'read', 'search', 'memory'
 model: 'gpt-4.1'
 target: 'vscode'
 handoffs:
