@@ -23,46 +23,24 @@ public class BugWriterAgent {
     private final CopilotCliService copilot;
     private final ObjectMapper objectMapper;
     private final String model;
+    private final String systemPrompt;
+    private final String userTemplate;
 
     public BugWriterAgent(
             CopilotCliService copilot,
             ObjectMapper objectMapper,
-            @Value("${copilot.cli.agents.bug-writer.model:${copilot.cli.model:gpt-4.1}}") String model) {
+            @Value("${copilot.cli.agents.bug-writer.model:${copilot.cli.model:gpt-4.1}}") String model,
+            @Value("${copilot.cli.agents.bug-writer.system}") String systemPrompt,
+            @Value("${copilot.cli.agents.bug-writer.user-template}") String userTemplate) {
         this.copilot = copilot;
         this.objectMapper = objectMapper;
         this.model = model;
+        this.systemPrompt = systemPrompt;
+        this.userTemplate = userTemplate;
     }
 
     public BugReport write(TestFailureEvent event, String technicalAnalysis, String rootCause) {
-        String system = """
-                You are a QA engineer expert in writing clear, actionable bug reports.
-                You must respond with ONLY valid JSON matching this exact structure — no markdown, no explanation:
-                {
-                  "title": "<short title ≤ 80 chars>",
-                  "description": "<detailed description>",
-                  "stepsToReproduce": "<numbered steps or test name>",
-                  "expectedBehavior": "<what should happen>",
-                  "actualBehavior": "<what actually happened>",
-                  "confidence": <float 0.0–1.0 — your confidence in the accuracy of this bug report>
-                }
-                """;
-
-        String user = """
-                ## Bug Report Generation Request
-
-                **Error:** %s
-                **Source:** %s
-                **Test:** %s
-                **Context:** %s
-
-                **Technical Analysis:**
-                %s
-
-                **Root Cause:**
-                %s
-
-                Generate the bug report JSON now.
-                """.formatted(
+        String user = userTemplate.formatted(
                 event.errorMessage(),
                 event.source(),
                 Strings.nvl(event.testName()),
@@ -71,7 +49,7 @@ public class BugWriterAgent {
                 rootCause
         );
 
-        String raw = copilot.ask("BugWriter", model, system, user);
+        String raw = copilot.ask("BugWriter", model, systemPrompt, user);
         return parseOrFallback(raw, event);
     }
 

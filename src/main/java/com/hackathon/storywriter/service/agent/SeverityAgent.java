@@ -23,48 +23,24 @@ public class SeverityAgent {
     private final CopilotCliService copilot;
     private final ObjectMapper objectMapper;
     private final String model;
+    private final String systemPrompt;
+    private final String userTemplate;
 
     public SeverityAgent(
             CopilotCliService copilot,
             ObjectMapper objectMapper,
-            @Value("${copilot.cli.agents.severity.model:${copilot.cli.model:gpt-4.1}}") String model) {
+            @Value("${copilot.cli.agents.severity.model:${copilot.cli.model:gpt-4.1}}") String model,
+            @Value("${copilot.cli.agents.severity.system}") String systemPrompt,
+            @Value("${copilot.cli.agents.severity.user-template}") String userTemplate) {
         this.copilot = copilot;
         this.objectMapper = objectMapper;
         this.model = model;
+        this.systemPrompt = systemPrompt;
+        this.userTemplate = userTemplate;
     }
 
     public SeverityAssessment assess(TestFailureEvent event, String technicalAnalysis, String rootCause) {
-        String system = """
-                You are a senior engineering manager expert in triaging software defects.
-                Determine the priority severity of the reported failure using this scale:
-                  Blocker  = production blocker, data loss, or security vulnerability
-                  Critical = major feature completely broken, no workaround available
-                  Major    = feature partially impacted, workaround exists
-                  Minor    = cosmetic or edge case with minimal business impact
-                You must respond with ONLY valid JSON matching this exact structure — no markdown, no explanation:
-                {
-                  "level": "<Blocker|Critical|Major|Minor>",
-                  "rationale": "<2-3 sentence justification>",
-                  "confidence": <float 0.0–1.0 — your confidence in this severity assessment>
-                }
-                """;
-
-        String user = """
-                ## Severity Assessment Request
-
-                **Error:** %s
-                **Source:** %s
-                **Test:** %s
-                **Context:** %s
-
-                **Technical Analysis:**
-                %s
-
-                **Root Cause:**
-                %s
-
-                Assess the severity and return the JSON now.
-                """.formatted(
+        String user = userTemplate.formatted(
                 event.errorMessage(),
                 event.source(),
                 Strings.nvl(event.testName()),
@@ -73,7 +49,7 @@ public class SeverityAgent {
                 rootCause
         );
 
-        String raw = copilot.ask("Severity", model, system, user);
+        String raw = copilot.ask("Severity", model, systemPrompt, user);
         return parseOrFallback(raw);
     }
 

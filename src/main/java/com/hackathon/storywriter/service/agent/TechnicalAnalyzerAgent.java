@@ -23,47 +23,27 @@ public class TechnicalAnalyzerAgent {
     private final CopilotCliService copilot;
     private final int maxStacktraceChars;
     private final String model;
+    private final String systemPrompt;
+    private final String userTemplate;
 
     public TechnicalAnalyzerAgent(
             CopilotCliService copilot,
             @Value("${copilot.cli.agents.technical-analyzer.model:${copilot.cli.model:gpt-4.1}}") String model,
-            @Value("${copilot.cli.max-stacktrace-chars:3000}") int maxStacktraceChars) {
+            @Value("${copilot.cli.max-stacktrace-chars:3000}") int maxStacktraceChars,
+            @Value("${copilot.cli.agents.technical-analyzer.system}") String systemPrompt,
+            @Value("${copilot.cli.agents.technical-analyzer.user-template}") String userTemplate) {
         this.copilot = copilot;
         this.model = model;
         this.maxStacktraceChars = maxStacktraceChars;
+        this.systemPrompt = systemPrompt;
+        this.userTemplate = userTemplate;
     }
 
     public String analyze(TestFailureEvent event) {
         log.debug("Analyzing failure: source={}, test={}", event.source(), event.testName());
         String stackTrace = Strings.truncate(event.stackTrace(), maxStacktraceChars);
 
-        String system = """
-                You are a senior Java engineer specializing in diagnosing test failures.
-                Analyze the provided failure and return a structured technical summary.
-                Be concise, precise, and focus only on factual observations.
-                Format your response as plain text with clear sections.
-                """;
-
-        String user = """
-                ## Test Failure Technical Analysis Request
-
-                **Source:** %s
-                **Test:** %s
-                **Error:** %s
-
-                **Stack Trace:**
-                ```
-                %s
-                ```
-
-                **Additional Context:** %s
-
-                Provide a technical analysis covering:
-                1. Error type and classification
-                2. Component / layer where the failure originated
-                3. Key observations from the stack trace
-                4. Whether this is likely a unit-level or integration-level issue
-                """.formatted(
+        String user = userTemplate.formatted(
                 event.source(),
                 Strings.nvl(event.testName()),
                 event.errorMessage(),
@@ -71,7 +51,7 @@ public class TechnicalAnalyzerAgent {
                 Strings.nvl(event.context())
         );
 
-        return copilot.ask("TechnicalAnalyzer", model, system, user);
+        return copilot.ask("TechnicalAnalyzer", model, systemPrompt, user);
     }
 
 

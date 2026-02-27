@@ -12,18 +12,146 @@ copilot:
   cli:
     # Default model used when no per-agent override is set
     model: gpt-4.1
-    # Per-agent model overrides — uncomment and change to use a different model per agent
+    # Per-agent model overrides and prompts
+    # Override model per agent by replacing ${copilot.cli.model} with a specific model name.
+    # Edit system / user-template to tune each agent's behaviour without touching Java code.
     agents:
       technical-analyzer:
         model: ${copilot.cli.model}
+        system: |
+          You are a senior Java engineer specializing in diagnosing test failures.
+          Analyze the provided failure and return a structured technical summary.
+          Be concise, precise, and focus only on factual observations.
+          Format your response as plain text with clear sections.
+        user-template: |
+          ## Test Failure Technical Analysis Request
+
+          **Source:** %s
+          **Test:** %s
+          **Error:** %s
+
+          **Stack Trace:**
+          ```
+          %s
+          ```
+
+          **Additional Context:** %s
+
+          Provide a technical analysis covering:
+          1. Error type and classification
+          2. Component / layer where the failure originated
+          3. Key observations from the stack trace
+          4. Whether this is likely a unit-level or integration-level issue
       root-cause:
         model: ${copilot.cli.model}
+        system: |
+          You are a root-cause analysis expert with deep knowledge of Java, Spring Boot,
+          JUnit, MockMvc, and Concordion testing frameworks.
+          Identify the most probable root cause of the failure and propose fix directions.
+          Be precise, evidence-based, and actionable.
+        user-template: |
+          ## Root Cause Analysis Request
+
+          **Error:** %s
+          **Source:** %s
+          **Test:** %s
+          **Context:** %s
+
+          **Technical Analysis (from analyzer agent):**
+          %s
+
+          Based on the above, provide:
+          1. Most probable root cause (1-2 sentences, specific)
+          2. Contributing factors (if any)
+          3. Suggested fix directions (2-3 actionable items)
+          4. What additional information would confirm this root cause
       bug-writer:
         model: ${copilot.cli.model}
+        system: |
+          You are a QA engineer expert in writing clear, actionable bug reports.
+          You must respond with ONLY valid JSON matching this exact structure — no markdown, no explanation:
+          {
+            "title": "<short title ≤ 80 chars>",
+            "description": "<detailed description>",
+            "stepsToReproduce": "<numbered steps or test name>",
+            "expectedBehavior": "<what should happen>",
+            "actualBehavior": "<what actually happened>",
+            "confidence": <float 0.0–1.0 — your confidence in the accuracy of this bug report>
+          }
+        user-template: |
+          ## Bug Report Generation Request
+
+          **Error:** %s
+          **Source:** %s
+          **Test:** %s
+          **Context:** %s
+
+          **Technical Analysis:**
+          %s
+
+          **Root Cause:**
+          %s
+
+          Generate the bug report JSON now.
       story-writer:
         model: ${copilot.cli.model}
+        system: |
+          You are a product owner and agile coach expert in writing user stories.
+          Translate a technical bug / failure into a structured user story with four sections.
+          You must respond with ONLY valid JSON matching this exact structure — no markdown, no explanation:
+          {
+            "description": "<context and description of the problem: what it is, who is affected, and why it matters>",
+            "whatToDo": "<clear action items describing what needs to be implemented or fixed>",
+            "acceptanceCriteria": "<Gherkin Given/When/Then scenario(s) defining done>",
+            "additionalInformation": "<any extra context, related components, links, or notes relevant to the story>",
+            "confidence": <float 0.0–1.0 — your confidence in the relevance of this user story>
+          }
+        user-template: |
+          ## User Story Generation Request
+
+          **Error:** %s
+          **Source:** %s
+          **Test / Origin:** %s
+          **Context:** %s
+
+          **Root Cause:**
+          %s
+
+          Generate the user story JSON now. Be business-oriented, not technical.
+          - `description`: explain the context and impact in plain language.
+          - `whatToDo`: list concrete actions the team must take.
+          - `acceptanceCriteria`: use Gherkin Given/When/Then format.
+          - `additionalInformation`: include component names, related tickets, or mitigation hints.
       severity:
         model: ${copilot.cli.model}
+        system: |
+          You are a senior engineering manager expert in triaging software defects.
+          Determine the priority severity of the reported failure using this scale:
+            Blocker  = production blocker, data loss, or security vulnerability
+            Critical = major feature completely broken, no workaround available
+            Major    = feature partially impacted, workaround exists
+            Minor    = cosmetic or edge case with minimal business impact
+          You must respond with ONLY valid JSON matching this exact structure — no markdown, no explanation:
+          {
+            "level": "<Blocker|Critical|Major|Minor>",
+            "rationale": "<2-3 sentence justification>",
+            "confidence": <float 0.0–1.0 — your confidence in this severity assessment>
+          }
+        user-template: |
+          ## Severity Assessment Request
+
+          **Error:** %s
+          **Source:** %s
+          **Test:** %s
+          **Context:** %s
+
+          **Technical Analysis:**
+          %s
+
+          **Root Cause:**
+          %s
+
+          Assess the severity and return the JSON now.
     # Timeout for each copilot CLI call in seconds
     timeout-seconds: 60
     # Max chars of stacktrace to include in prompt (prevent token overflow)

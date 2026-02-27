@@ -23,47 +23,24 @@ public class StoryWriterAgent {
     private final CopilotCliService copilot;
     private final ObjectMapper objectMapper;
     private final String model;
+    private final String systemPrompt;
+    private final String userTemplate;
 
     public StoryWriterAgent(
             CopilotCliService copilot,
             ObjectMapper objectMapper,
-            @Value("${copilot.cli.agents.story-writer.model:${copilot.cli.model:gpt-4.1}}") String model) {
+            @Value("${copilot.cli.agents.story-writer.model:${copilot.cli.model:gpt-4.1}}") String model,
+            @Value("${copilot.cli.agents.story-writer.system}") String systemPrompt,
+            @Value("${copilot.cli.agents.story-writer.user-template}") String userTemplate) {
         this.copilot = copilot;
         this.objectMapper = objectMapper;
         this.model = model;
+        this.systemPrompt = systemPrompt;
+        this.userTemplate = userTemplate;
     }
 
     public UserStory write(TestFailureEvent event, String rootCause) {
-        String system = """
-                You are a product owner and agile coach expert in writing user stories.
-                Translate a technical bug / failure into a structured user story with four sections.
-                You must respond with ONLY valid JSON matching this exact structure — no markdown, no explanation:
-                {
-                  "description": "<context and description of the problem: what it is, who is affected, and why it matters>",
-                  "whatToDo": "<clear action items describing what needs to be implemented or fixed>",
-                  "acceptanceCriteria": "<Gherkin Given/When/Then scenario(s) defining done>",
-                  "additionalInformation": "<any extra context, related components, links, or notes relevant to the story>",
-                  "confidence": <float 0.0–1.0 — your confidence in the relevance of this user story>
-                }
-                """;
-
-        String user = """
-                ## User Story Generation Request
-
-                **Error:** %s
-                **Source:** %s
-                **Test / Origin:** %s
-                **Context:** %s
-
-                **Root Cause:**
-                %s
-
-                Generate the user story JSON now. Be business-oriented, not technical.
-                - `description`: explain the context and impact in plain language.
-                - `whatToDo`: list concrete actions the team must take.
-                - `acceptanceCriteria`: use Gherkin Given/When/Then format.
-                - `additionalInformation`: include component names, related tickets, or mitigation hints.
-                """.formatted(
+        String user = userTemplate.formatted(
                 event.errorMessage(),
                 event.source(),
                 Strings.nvl(event.testName()),
@@ -71,7 +48,7 @@ public class StoryWriterAgent {
                 rootCause
         );
 
-        String raw = copilot.ask("StoryWriter", model, system, user);
+        String raw = copilot.ask("StoryWriter", model, systemPrompt, user);
         return parseOrFallback(raw, event);
     }
 
